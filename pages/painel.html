@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel - Na Régua</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <i class="fas fa-cut"></i>
+                    <span>Na Régua</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="../index.html" class="nav-link">Início</a></li>
+                    <li><a href="cadastro.html" class="nav-link">Cadastro</a></li>
+                    <li><a href="agendamento.html" class="nav-link">Agendamento</a></li>
+                    <li><a href="painel.html" class="nav-link active">Painel</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-main">
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-chart-line"></i> Painel de Controle</h1>
+                <p>Gerencie todos os agendamentos da barbearia</p>
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalAgendamentos">0</h3>
+                        <p>Agendamentos Hoje</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalClientes">0</h3>
+                        <p>Clientes Cadastrados</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="receitaHoje">R$ 0,00</h3>
+                        <p>Receita Hoje</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="proximoAgendamento">--:--</h3>
+                        <p>Próximo Agendamento</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filters-container">
+                <div class="filter-group">
+                    <label for="filtroData">
+                        <i class="fas fa-calendar"></i>
+                        Data
+                    </label>
+                    <input type="date" id="filtroData" name="filtroData">
+                </div>
+                <div class="filter-group">
+                    <label for="filtroBarbeiro">
+                        <i class="fas fa-user"></i>
+                        Barbeiro
+                    </label>
+                    <select id="filtroBarbeiro" name="filtroBarbeiro">
+                        <option value="">Todos os barbeiros</option>
+                        <option value="joao">João Silva</option>
+                        <option value="pedro">Pedro Santos</option>
+                        <option value="carlos">Carlos Lima</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filtroStatus">
+                        <i class="fas fa-filter"></i>
+                        Status
+                    </label>
+                    <select id="filtroStatus" name="filtroStatus">
+                        <option value="">Todos</option>
+                        <option value="agendado">Agendado</option>
+                        <option value="confirmado">Confirmado</option>
+                        <option value="em-andamento">Em Andamento</option>
+                        <option value="concluido">Concluído</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary" onclick="aplicarFiltros()">
+                    <i class="fas fa-search"></i>
+                    Filtrar
+                </button>
+                <button class="btn btn-outline" onclick="limparFiltros()">
+                    <i class="fas fa-times"></i>
+                    Limpar
+                </button>
+            </div>
+
+            <!-- Lista de Agendamentos -->
+            <div class="agendamentos-container">
+                <div class="section-header">
+                    <h2>Agendamentos</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="abrirModalAgendamento()">
+                            <i class="fas fa-plus"></i>
+                            Novo Agendamento
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportarAgendamentos()">
+                            <i class="fas fa-download"></i>
+                            Exportar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="agendamentos-list" id="agendamentosList">
+                    <!-- Lista será carregada dinamicamente -->
+                </div>
+            </div>
+
+            <!-- Modal de Detalhes do Agendamento -->
+            <div id="detalhesModal" class="modal">
+                <div class="modal-content modal-large">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-info-circle"></i> Detalhes do Agendamento</h2>
+                        <span class="close" onclick="fecharModal('detalhesModal')">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="detalhes-content">
+                            <div class="detalhe-item">
+                                <strong>Código:</strong>
+                                <span id="detalhesCodigo">-</span>
+                            </div>
+                            <div class="detalhe-item">
+                                <strong>Cliente:</strong>
+                                <span id="detalhesCliente">-</span>
+                            </div>
+                            <div class="detalhe-item">
+                                <strong>Telefone:</strong>
+                                <span id="detalhesTelefone">-</span>
+                            </div>
+                            <div class="detalhe-item">
+                                <strong>Serviço:</strong>
+                                <span id="detalhesServico">-</span>
+                            </div>
+                            <div class="detalhe-item">
+                                <strong>Barbeiro:</strong>
+                                <span id="detalhesBarbeiro">-</span>
+                            </div>
+                            <div class="detalhe-item">
+                                <strong>Data:</strong>
+                                <span id="detalhesData">-</span>
+                            </div>
+                            <div class="detalhe-item">
+                                <strong>Horário:</strong>
+                                <span id="detalhesHorario">-</span>
+                            </div>
+                            <div class="detalhe-item">
+                                <strong>Duração:</strong>
+                                <span id="detalhesDuracao">-</span>
+                            </div>
+                            <div class="detalhe-item">
+                                <strong>Valor:</strong>
+                                <span id="detalhesValor">-</span>
+                            </div>
+                            <div class="detalhe-item">
+                                <strong>Status:</strong>
+                                <span id="detalhesStatus" class="status-badge">-</span>
+                            </div>
+                            <div class="detalhe-item">
+                                <strong>Observações:</strong>
+                                <textarea id="detalhesObservacoes" placeholder="Adicione observações sobre o agendamento..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" onclick="alterarStatus('confirmado')">
+                            <i class="fas fa-check"></i>
+                            Confirmar
+                        </button>
+                        <button class="btn btn-primary" onclick="alterarStatus('em-andamento')">
+                            <i class="fas fa-play"></i>
+                            Iniciar
+                        </button>
+                        <button class="btn btn-info" onclick="alterarStatus('concluido')">
+                            <i class="fas fa-flag-checkered"></i>
+                            Concluir
+                        </button>
+                        <button class="btn btn-warning" onclick="abrirModalReagendamento()">
+                            <i class="fas fa-edit"></i>
+                            Reagendar
+                        </button>
+                        <button class="btn btn-danger" onclick="cancelarAgendamento()">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Reagendamento -->
+            <div id="reagendamentoModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-edit"></i> Reagendar</h2>
+                        <span class="close" onclick="fecharModal('reagendamentoModal')">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="novaData">Nova Data:</label>
+                            <input type="date" id="novaData" name="novaData">
+                        </div>
+                        <div class="form-group">
+                            <label for="novoHorario">Novo Horário:</label>
+                            <select id="novoHorario" name="novoHorario">
+                                <!-- Opções serão carregadas dinamicamente -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="motivoReagendamento">Motivo:</label>
+                            <textarea id="motivoReagendamento" placeholder="Motivo do reagendamento..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="confirmarReagendamento()">
+                            <i class="fas fa-check"></i>
+                            Confirmar
+                        </button>
+                        <button class="btn btn-secondary" onclick="fecharModal('reagendamentoModal')">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-cut"></i>
+                    <span>Na Régua</span>
+                </div>
+                <p>&copy; 2025 Na Régua. Sistema de Agendamento para Barbearias.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/painel.js"></script>
+</body>
+</html>

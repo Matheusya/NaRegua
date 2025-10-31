@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento - Na Régua</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <i class="fas fa-cut"></i>
+                    <span>Na Régua</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="../index.html" class="nav-link">Início</a></li>
+                    <li><a href="cadastro.html" class="nav-link">Cadastro</a></li>
+                    <li><a href="agendamento.html" class="nav-link active">Agendamento</a></li>
+                    <li><a href="painel.html" class="nav-link">Painel</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-main">
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-calendar-plus"></i> Novo Agendamento</h1>
+                <p>Escolha o melhor horário para seu corte</p>
+            </div>
+
+            <div class="agendamento-container">
+                <!-- Seleção de Cliente -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-number">1</span>
+                        <h2>Dados do Cliente</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="form-group">
+                            <label for="clienteExistente">
+                                <i class="fas fa-user"></i>
+                                Cliente Existente
+                            </label>
+                            <select id="clienteExistente" name="clienteExistente">
+                                <option value="">Selecione um cliente cadastrado</option>
+                            </select>
+                        </div>
+                        <div class="divider">
+                            <span>ou</span>
+                        </div>
+                        <div class="cliente-novo">
+                            <div class="form-group">
+                                <label for="nomeCliente">
+                                    <i class="fas fa-user-plus"></i>
+                                    Nome do Cliente
+                                </label>
+                                <input type="text" id="nomeCliente" name="nomeCliente" placeholder="Digite o nome do cliente">
+                            </div>
+                            <div class="form-group">
+                                <label for="telefoneCliente">
+                                    <i class="fas fa-phone"></i>
+                                    Telefone
+                                </label>
+                                <input type="tel" id="telefoneCliente" name="telefoneCliente" placeholder="(11) 99999-9999">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seleção de Serviço -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-number">2</span>
+                        <h2>Escolha o Serviço</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="servicos-grid">
+                            <div class="servico-card" data-servico="corte-simples" data-duracao="30" data-preco="25">
+                                <i class="fas fa-cut"></i>
+                                <h3>Corte Simples</h3>
+                                <p>Corte tradicional</p>
+                                <span class="preco">R$ 25,00</span>
+                                <span class="duracao">30 min</span>
+                            </div>
+                            <div class="servico-card" data-servico="corte-barba" data-duracao="45" data-preco="35">
+                                <i class="fas fa-user-tie"></i>
+                                <h3>Corte + Barba</h3>
+                                <p>Corte com acabamento da barba</p>
+                                <span class="preco">R$ 35,00</span>
+                                <span class="duracao">45 min</span>
+                            </div>
+                            <div class="servico-card" data-servico="barba" data-duracao="20" data-preco="15">
+                                <i class="fas fa-prescription-bottle"></i>
+                                <h3>Apenas Barba</h3>
+                                <p>Aparar e modelar barba</p>
+                                <span class="preco">R$ 15,00</span>
+                                <span class="duracao">20 min</span>
+                            </div>
+                            <div class="servico-card" data-servico="corte-premium" data-duracao="60" data-preco="50">
+                                <i class="fas fa-crown"></i>
+                                <h3>Corte Premium</h3>
+                                <p>Corte + Barba + Hidratação</p>
+                                <span class="preco">R$ 50,00</span>
+                                <span class="duracao">60 min</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seleção de Barbeiro -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-number">3</span>
+                        <h2>Escolha o Barbeiro</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="barbeiros-grid">
+                            <div class="barbeiro-card" data-barbeiro="joao">
+                                <div class="barbeiro-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <h3>João Silva</h3>
+                                <p>Especialista em cortes clássicos</p>
+                                <div class="barbeiro-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <span>5.0</span>
+                                </div>
+                            </div>
+                            <div class="barbeiro-card" data-barbeiro="pedro">
+                                <div class="barbeiro-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <h3>Pedro Santos</h3>
+                                <p>Expert em cortes modernos</p>
+                                <div class="barbeiro-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span>4.8</span>
+                                </div>
+                            </div>
+                            <div class="barbeiro-card" data-barbeiro="carlos">
+                                <div class="barbeiro-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <h3>Carlos Lima</h3>
+                                <p>Especialista em barbas</p>
+                                <div class="barbeiro-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <span>4.9</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seleção de Data e Hora -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-number">4</span>
+                        <h2>Data e Horário</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="datetime-selection">
+                            <div class="date-selection">
+                                <label for="dataAgendamento">
+                                    <i class="fas fa-calendar"></i>
+                                    Escolha a Data
+                                </label>
+                                <input type="date" id="dataAgendamento" name="dataAgendamento" min="">
+                            </div>
+                            <div class="time-selection">
+                                <label>
+                                    <i class="fas fa-clock"></i>
+                                    Horários Disponíveis
+                                </label>
+                                <div class="horarios-grid" id="horariosDisponiveis">
+                                    <!-- Horários serão carregados dinamicamente -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumo do Agendamento -->
+                <div class="step-card" id="resumoCard" style="display: none;">
+                    <div class="step-header">
+                        <span class="step-number">5</span>
+                        <h2>Resumo do Agendamento</h2>
+                    </div>
+                    <div class="step-content">
+                        <div class="resumo-content">
+                            <div class="resumo-item">
+                                <strong>Cliente:</strong>
+                                <span id="resumoCliente">-</span>
+                            </div>
+                            <div class="resumo-item">
+                                <strong>Serviço:</strong>
+                                <span id="resumoServico">-</span>
+                            </div>
+                            <div class="resumo-item">
+                                <strong>Barbeiro:</strong>
+                                <span id="resumoBarbeiro">-</span>
+                            </div>
+                            <div class="resumo-item">
+                                <strong>Data:</strong>
+                                <span id="resumoData">-</span>
+                            </div>
+                            <div class="resumo-item">
+                                <strong>Horário:</strong>
+                                <span id="resumoHorario">-</span>
+                            </div>
+                            <div class="resumo-item">
+                                <strong>Duração:</strong>
+                                <span id="resumoDuracao">-</span>
+                            </div>
+                            <div class="resumo-item total">
+                                <strong>Valor Total:</strong>
+                                <span id="resumoValor">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="form-actions">
+                    <button id="confirmarAgendamento" class="btn btn-primary" style="display: none;">
+                        <i class="fas fa-check"></i>
+                        Confirmar Agendamento
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="limparFormulario()">
+                        <i class="fas fa-undo"></i>
+                        Limpar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal de Confirmação -->
+            <div id="confirmModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <i class="fas fa-check-circle success-icon"></i>
+                        <h2>Agendamento Confirmado!</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>Seu agendamento foi realizado com sucesso.</p>
+                        <div class="agendamento-codigo">
+                            <strong>Código do Agendamento:</strong>
+                            <span id="codigoAgendamento"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="novoAgendamento()">
+                            Novo Agendamento
+                        </button>
+                        <button class="btn btn-secondary" onclick="verPainel()">
+                            Ver Agendamentos
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-cut"></i>
+                    <span>Na Régua</span>
+                </div>
+                <p>&copy; 2025 Na Régua. Sistema de Agendamento para Barbearias.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/agendamento.js"></script>
+</body>
+</html>
