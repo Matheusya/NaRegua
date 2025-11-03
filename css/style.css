@@ -80,6 +80,10 @@ body {
     gap: 2rem;
 }
 
+.nav-menu li {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
 .nav-link {
     color: white;
     text-decoration: none;
@@ -226,6 +230,38 @@ body {
     text-shadow: 0 0 15px var(--neon-orange);
 }
 
+/* Mensagem de boas-vindas */
+.welcome-message {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+    animation: slideInDown 0.5s ease-out;
+}
+
+.welcome-message p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.welcome-message i {
+    font-size: 1.3rem;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .hero-subtitle {
     font-size: 1.2rem;
     margin-bottom: 2rem;
@@ -235,6 +271,11 @@ body {
 .hero-buttons {
     display: flex;
     gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.hero-buttons .btn i {
+    margin-right: 8px;
 }
 
 .hero-image {
@@ -1327,3 +1368,443 @@ footer {
 .gap-1 { gap: 0.5rem; }
 .gap-2 { gap: 1rem; }
 .gap-3 { gap: 1.5rem; }
+
+/* Estilos para Login */
+.login-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-icon {
+    font-size: 4rem;
+    color: var(--neon-orange);
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
+}
+
+.login-header h1 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.login-header p {
+    color: var(--secondary-color);
+}
+
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper input {
+    width: 100%;
+    padding-right: 45px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+    padding: 5px;
+    transition: var(--transition);
+}
+
+.toggle-password:hover {
+    color: var(--neon-orange);
+}
+
+.btn-block {
+    width: 100%;
+    justify-content: center;
+}
+
+.form-links {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.form-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* User Menu no Header */
+.user-info {
+    position: relative;
+}
+
+.user-dropdown {
+    position: relative;
+}
+
+.user-button {
+    background: rgba(255, 140, 0, 0.1);
+    border: 1px solid var(--neon-orange);
+    padding: 8px 15px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: var(--transition);
+}
+
+.user-button:hover {
+    background: rgba(255, 140, 0, 0.2);
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
+}
+
+.user-button i:first-child {
+    font-size: 1.5rem;
+}
+
+.user-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    min-width: 250px;
+    display: none;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.user-menu.show {
+    display: block;
+    animation: fadeInDown 0.3s ease;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-menu-header {
+    padding: 15px;
+    background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+    color: white;
+    border-bottom: 2px solid var(--neon-orange);
+}
+
+.user-menu-header strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.user-menu-header small {
+    color: var(--accent-color);
+}
+
+.user-menu-items {
+    padding: 10px 0;
+}
+
+.user-menu-items a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.user-menu-items a:hover {
+    background: var(--background-warm);
+    color: var(--neon-orange);
+}
+
+.user-menu-items i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Notificações */
+.notification {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    min-width: 300px;
+    max-width: 400px;
+    padding: 15px 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 10000;
+    animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.notification.success {
+    border-left: 4px solid var(--success-color);
+}
+
+.notification.success i {
+    color: var(--success-color);
+}
+
+.notification.error {
+    border-left: 4px solid var(--danger-color);
+}
+
+.notification.error i {
+    color: var(--danger-color);
+}
+
+.notification.info {
+    border-left: 4px solid #3498db;
+}
+
+.notification.info i {
+    color: #3498db;
+}
+
+.notification i {
+    font-size: 1.5rem;
+}
+
+.notification span {
+    flex: 1;
+    color: var(--text-color);
+}
+
+.close-notification {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: var(--transition);
+}
+
+.close-notification:hover {
+    color: var(--danger-color);
+}
+
+/* Ajustes para agendamento sem seleção de cliente */
+.step-card:first-child[style*="display: none"] ~ .step-card .step-number {
+    counter-reset: step-counter;
+}
+
+/* No agendamentos message */
+.no-agendamentos {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--secondary-color);
+}
+
+.no-agendamentos i {
+    font-size: 4rem;
+    color: var(--border-color);
+    margin-bottom: 20px;
+}
+
+.no-agendamentos p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+/* Estilos específicos para Barbeiro */
+.form-section {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+}
+
+.form-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.disponibilidade-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.stat-card-highlight {
+    border: 2px solid var(--neon-orange);
+    box-shadow: 0 0 20px rgba(255, 140, 0, 0.2);
+}
+
+.barbeiro-actions-bar {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+}
+
+.barbeiro-actions-bar .filters-container {
+    margin-bottom: 15px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.view-toggle {
+    display: flex;
+    gap: 5px;
+}
+
+.view-toggle .btn {
+    min-width: auto;
+    padding: 8px 12px;
+}
+
+.view-toggle .btn.active {
+    background: linear-gradient(135deg, var(--neon-orange), var(--accent-color));
+    color: white;
+}
+
+.agendamento-card.barbeiro-view {
+    border-left: 4px solid var(--border-color);
+}
+
+.agendamento-card.agendamento-hoje {
+    border-left: 4px solid var(--neon-orange);
+    background: linear-gradient(135deg, #fff8e1, white);
+}
+
+.dias-trabalho-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.dia-trabalho-card {
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.dia-trabalho-card.disponivel {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    border: 2px solid var(--success-color);
+}
+
+.dia-trabalho-card.disponivel i {
+    color: var(--success-color);
+    font-size: 1.5rem;
+}
+
+.dia-trabalho-card.indisponivel {
+    background: linear-gradient(135deg, #ffebee, #ffcdd2);
+    border: 2px solid var(--danger-color);
+    opacity: 0.6;
+}
+
+.dia-trabalho-card.indisponivel i {
+    color: var(--danger-color);
+    font-size: 1.5rem;
+}
+
+.dia-trabalho-card span {
+    display: block;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+.disponibilidade-info {
+    background: var(--background-warm);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.disponibilidade-info h3 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.horario-info {
+    display: flex;
+    gap: 30px;
+    margin-top: 10px;
+}
+
+.horario-info p {
+    font-size: 1rem;
+}
+
+.horario-info strong {
+    color: var(--primary-color);
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .barbeiro-actions-bar .filters-container {
+        flex-direction: column;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .dias-trabalho-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

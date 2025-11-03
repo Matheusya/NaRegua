@@ -4,78 +4,85 @@ let agendamentoSelecionado = null;
 let filtrosAtivos = {};
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Verificar se está logado
+    if (!window.auth || !window.auth.requireAuth()) {
+        return;
+    }
+
     carregarEstatisticas();
     carregarAgendamentos();
     setupEventListeners();
-    definirDataAtual();
 });
 
 function setupEventListeners() {
     // Filtros
-    document.getElementById('filtroData').addEventListener('change', aplicarFiltros);
-    document.getElementById('filtroBarbeiro').addEventListener('change', aplicarFiltros);
     document.getElementById('filtroStatus').addEventListener('change', aplicarFiltros);
 }
 
-function definirDataAtual() {
-    const hoje = new Date();
-    document.getElementById('filtroData').value = hoje.toISOString().split('T')[0];
-    filtrosAtivos.data = hoje.toISOString().split('T')[0];
-}
-
 function carregarEstatisticas() {
-    const agendamentos = window.db.getAgendamentos();
-    const clientes = window.db.getClientes();
+    const user = window.auth.getCurrentUser();
+    if (!user) return;
+
+    const todosAgendamentos = window.db.getAgendamentos();
+    const agendamentos = todosAgendamentos.filter(ag => ag.clienteId === user.id);
     const hoje = new Date().toISOString().split('T')[0];
     
-    // Agendamentos de hoje
-    const agendamentosHoje = agendamentos.filter(ag => 
-        ag.data === hoje && ag.status !== 'cancelado'
-    );
+    // Total de agendamentos
+    const totalAgendamentos = agendamentos.filter(ag => ag.status !== 'cancelado').length;
     
-    // Receita de hoje
-    const receitaHoje = agendamentosHoje
-        .filter(ag => ag.status === 'concluido')
-        .reduce((total, ag) => total + ag.valor, 0);
+    // Agendamentos pendentes (agendado ou confirmado)
+    const agendamentosPendentes = agendamentos.filter(ag => 
+        ['agendado', 'confirmado'].includes(ag.status)
+    ).length;
+    
+    // Agendamentos concluídos
+    const agendamentosConcluidos = agendamentos.filter(ag => 
+        ag.status === 'concluido'
+    ).length;
     
     // Próximo agendamento
-    const agendamentosHojeOrdenados = agendamentosHoje
+    const agendamentosFuturos = agendamentos
         .filter(ag => ['agendado', 'confirmado'].includes(ag.status))
-        .sort((a, b) => a.horario.localeCompare(b.horario));
+        .filter(ag => {
+            const dataAg = new Date(ag.data);
+            const hojeDate = new Date(hoje);
+            return dataAg >= hojeDate;
+        })
+        .sort((a, b) => {
+            if (a.data !== b.data) return a.data.localeCompare(b.data);
+            return a.horario.localeCompare(b.horario);
+        });
     
-    const proximoAgendamento = agendamentosHojeOrdenados[0];
+    const proximoAgendamento = agendamentosFuturos[0];
     
     // Atualizar elementos
-    document.getElementById('totalAgendamentos').textContent = agendamentosHoje.length;
-    document.getElementById('totalClientes').textContent = clientes.length;
-    document.getElementById('receitaHoje').textContent = Utils.formatCurrency(receitaHoje);
+    document.getElementById('totalAgendamentos').textContent = totalAgendamentos;
+    document.getElementById('agendamentosPendentes').textContent = agendamentosPendentes;
+    document.getElementById('agendamentosConcluidos').textContent = agendamentosConcluidos;
     document.getElementById('proximoAgendamento').textContent = 
-        proximoAgendamento ? proximoAgendamento.horario : '--:--';
+        proximoAgendamento ? `${Utils.formatDate(proximoAgendamento.data)} ${proximoAgendamento.horario}` : 'Nenhum';
 }
 
 function carregarAgendamentos() {
-    const agendamentos = window.db.getAgendamentos();
+    const user = window.auth.getCurrentUser();
+    if (!user) return;
+
+    const todosAgendamentos = window.db.getAgendamentos();
+    // Filtrar apenas agendamentos do usuário logado
+    let agendamentos = todosAgendamentos.filter(ag => ag.clienteId === user.id);
     const container = document.getElementById('agendamentosList');
     
-    // Aplicar filtros
+    // Aplicar filtros adicionais
     let agendamentosFiltrados = agendamentos;
-    
-    if (filtrosAtivos.data) {
-        agendamentosFiltrados = agendamentosFiltrados.filter(ag => ag.data === filtrosAtivos.data);
-    }
-    
-    if (filtrosAtivos.barbeiro) {
-        agendamentosFiltrados = agendamentosFiltrados.filter(ag => ag.barbeiro === filtrosAtivos.barbeiro);
-    }
     
     if (filtrosAtivos.status) {
         agendamentosFiltrados = agendamentosFiltrados.filter(ag => ag.status === filtrosAtivos.status);
     }
     
-    // Ordenar por horário
+    // Ordenar por data e horário (mais recentes primeiro)
     agendamentosFiltrados.sort((a, b) => {
-        if (a.data !== b.data) return a.data.localeCompare(b.data);
-        return a.horario.localeCompare(b.horario);
+        if (a.data !== b.data) return b.data.localeCompare(a.data);
+        return b.horario.localeCompare(a.horario);
     });
     
     // Limpar container
@@ -86,6 +93,10 @@ function carregarAgendamentos() {
             <div class="no-agendamentos">
                 <i class="fas fa-calendar-times"></i>
                 <p>Nenhum agendamento encontrado</p>
+                <button class="btn btn-primary" onclick="abrirModalAgendamento()">
+                    <i class="fas fa-plus"></i>
+                    Fazer Primeiro Agendamento
+                </button>
             </div>
         `;
         return;
@@ -104,8 +115,8 @@ function criarCardAgendamento(agendamento) {
     div.innerHTML = `
         <div class="agendamento-header">
             <div class="agendamento-info">
-                <h3>${agendamento.clienteNome}</h3>
-                <p><i class="fas fa-phone"></i> ${agendamento.clienteTelefone}</p>
+                <h3>${agendamento.servicoNome}</h3>
+                <p><i class="fas fa-user"></i> ${agendamento.barbeiroNome}</p>
             </div>
             <div class="agendamento-status">
                 <span class="status-badge ${agendamento.status}">${getStatusText(agendamento.status)}</span>
@@ -113,12 +124,8 @@ function criarCardAgendamento(agendamento) {
         </div>
         <div class="agendamento-details">
             <div class="detail-item">
-                <i class="fas fa-cut"></i>
-                <span>${agendamento.servicoNome}</span>
-            </div>
-            <div class="detail-item">
-                <i class="fas fa-user"></i>
-                <span>${agendamento.barbeiroNome}</span>
+                <i class="fas fa-barcode"></i>
+                <span><strong>Código:</strong> ${agendamento.codigo}</span>
             </div>
             <div class="detail-item">
                 <i class="fas fa-calendar"></i>
@@ -126,7 +133,7 @@ function criarCardAgendamento(agendamento) {
             </div>
             <div class="detail-item">
                 <i class="fas fa-clock"></i>
-                <span>${agendamento.horario}</span>
+                <span>${agendamento.horario} (${agendamento.duracao} min)</span>
             </div>
             <div class="detail-item">
                 <i class="fas fa-dollar-sign"></i>
@@ -159,53 +166,29 @@ function getStatusText(status) {
 function getActionButtons(agendamento) {
     let buttons = '';
     
-    switch (agendamento.status) {
-        case 'agendado':
-            buttons += `
-                <button class="btn btn-success btn-sm" onclick="alterarStatusRapido('${agendamento.codigo}', 'confirmado')">
-                    <i class="fas fa-check"></i>
-                    Confirmar
-                </button>
-            `;
-            break;
-        case 'confirmado':
-            buttons += `
-                <button class="btn btn-primary btn-sm" onclick="alterarStatusRapido('${agendamento.codigo}', 'em-andamento')">
-                    <i class="fas fa-play"></i>
-                    Iniciar
-                </button>
-            `;
-            break;
-        case 'em-andamento':
-            buttons += `
-                <button class="btn btn-info btn-sm" onclick="alterarStatusRapido('${agendamento.codigo}', 'concluido')">
-                    <i class="fas fa-flag-checkered"></i>
-                    Concluir
-                </button>
-            `;
-            break;
-    }
-    
+    // Apenas permitir cancelamento se não estiver concluído ou já cancelado
     if (!['concluido', 'cancelado'].includes(agendamento.status)) {
-        buttons += `
-            <button class="btn btn-danger btn-sm" onclick="cancelarAgendamentoRapido('${agendamento.codigo}')">
-                <i class="fas fa-times"></i>
-                Cancelar
-            </button>
-        `;
+        const hoje = new Date();
+        const dataAgendamento = new Date(agendamento.data);
+        
+        // Só permitir cancelar se for hoje ou no futuro
+        if (dataAgendamento >= hoje.setHours(0,0,0,0)) {
+            buttons += `
+                <button class="btn btn-danger btn-sm" onclick="cancelarAgendamentoRapido('${agendamento.codigo}')">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+            `;
+        }
     }
     
     return buttons;
 }
 
 function aplicarFiltros() {
-    const data = document.getElementById('filtroData').value;
-    const barbeiro = document.getElementById('filtroBarbeiro').value;
     const status = document.getElementById('filtroStatus').value;
     
     filtrosAtivos = {
-        data: data || null,
-        barbeiro: barbeiro || null,
         status: status || null
     };
     
@@ -214,8 +197,6 @@ function aplicarFiltros() {
 }
 
 function limparFiltros() {
-    document.getElementById('filtroData').value = '';
-    document.getElementById('filtroBarbeiro').value = '';
     document.getElementById('filtroStatus').value = '';
     
     filtrosAtivos = {};
@@ -263,7 +244,7 @@ function alterarStatus(novoStatus) {
     
     carregarAgendamentos();
     carregarEstatisticas();
-    fecharModal('detalhesModal');
+    closeModal('detalhesModal');
 }
 
 function alterarStatusRapido(codigo, novoStatus) {
@@ -288,7 +269,7 @@ function cancelarAgendamento() {
         
         carregarAgendamentos();
         carregarEstatisticas();
-        fecharModal('detalhesModal');
+        closeModal('detalhesModal');
     }
 }
 
@@ -355,57 +336,16 @@ function confirmarReagendamento() {
     
     carregarAgendamentos();
     carregarEstatisticas();
-    fecharModal('reagendamentoModal');
-    fecharModal('detalhesModal');
-}
-
-function exportarAgendamentos() {
-    const agendamentos = window.db.getAgendamentos();
-    
-    if (agendamentos.length === 0) {
-        Utils.showNotification('Nenhum agendamento para exportar', 'error');
-        return;
-    }
-    
-    // Criar CSV
-    const headers = ['Código', 'Cliente', 'Telefone', 'Serviço', 'Barbeiro', 'Data', 'Horário', 'Valor', 'Status'];
-    const csv = [headers.join(',')];
-    
-    agendamentos.forEach(ag => {
-        const row = [
-            ag.codigo,
-            ag.clienteNome,
-            ag.clienteTelefone,
-            ag.servicoNome,
-            ag.barbeiroNome,
-            ag.data,
-            ag.horario,
-            ag.valor,
-            ag.status
-        ];
-        csv.push(row.join(','));
-    });
-    
-    // Download do arquivo
-    const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `agendamentos_${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-    
-    Utils.showNotification('Agendamentos exportados com sucesso', 'success');
+    closeModal('reagendamentoModal');
+    closeModal('detalhesModal');
 }
 
 function abrirModalAgendamento() {
     window.location.href = 'agendamento.html';
 }
 
-function fecharModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-}
+// Recarregar dados quando a sessão for recarregada
+window.addEventListener('sessionLoaded', function() {
+    carregarAgendamentos();
+    carregarEstatisticas();
+});

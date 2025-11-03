@@ -18,6 +18,7 @@
                 <ul class="nav-menu">
                     <li><a href="index.html" class="nav-link active">Início</a></li>
                     <li><a href="pages/cadastro.html" class="nav-link">Cadastro</a></li>
+                    <li><a href="pages/login.html" class="nav-link">Login</a></li>
                     <li><a href="pages/agendamento.html" class="nav-link">Agendamento</a></li>
                     <li><a href="pages/painel.html" class="nav-link">Painel</a></li>
                 </ul>
@@ -39,6 +40,7 @@
                 <div class="hero-buttons">
                     <a href="pages/cadastro.html" class="btn btn-primary">Cadastre-se</a>
                     <a href="pages/agendamento.html" class="btn btn-secondary">Agendar Agora</a>
+                    <a href="pages/cadastro-barbeiro.html" class="btn btn-outline">Sou Barbeiro</a>
                 </div>
             </div>
             <div class="hero-image">
@@ -163,5 +165,141 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Ocultar/mostrar elementos baseado no estado de autenticação
+        document.addEventListener('DOMContentLoaded', function() {
+            atualizarInterfaceAuth();
+        });
+
+        // Também atualizar quando a sessão for recarregada
+        window.addEventListener('sessionLoaded', function() {
+            atualizarInterfaceAuth();
+        });
+
+        // Atualizar quando o usuário fizer logout
+        window.addEventListener('userLogout', function() {
+            atualizarInterfaceAuth();
+        });
+
+        function atualizarInterfaceAuth() {
+            const isAuthenticated = window.auth && window.auth.isAuthenticated();
+            const user = window.auth ? window.auth.getCurrentUser() : null;
+            
+            // Elementos do menu de navegação
+            const cadastroLink = document.querySelector('a[href="pages/cadastro.html"]');
+            const loginLink = document.querySelector('a[href="pages/login.html"]');
+            const agendamentoLink = document.querySelector('a[href="pages/agendamento.html"]');
+            const painelLink = document.querySelector('a[href="pages/painel.html"]');
+            
+            // Elementos da hero section
+            const heroCadastro = document.querySelector('.hero-buttons a[href="pages/cadastro.html"]');
+            const cadastroBarbeiroBtn = document.querySelector('.hero-buttons a[href="pages/cadastro-barbeiro.html"]');
+            
+            // Elemento CTA no final da página
+            const ctaSection = document.querySelector('.cta');
+            
+            if (isAuthenticated && user) {
+                // Ocultar links de cadastro e login do menu
+                if (cadastroLink) {
+                    cadastroLink.parentElement.style.display = 'none';
+                }
+                if (loginLink) {
+                    loginLink.parentElement.style.display = 'none';
+                }
+                
+                // Mostrar links de agendamento e painel
+                if (agendamentoLink) {
+                    agendamentoLink.parentElement.style.display = '';
+                }
+                if (painelLink) {
+                    painelLink.parentElement.style.display = '';
+                }
+                
+                // Ocultar botões de cadastro na hero section
+                if (heroCadastro) {
+                    heroCadastro.style.display = 'none';
+                }
+                if (cadastroBarbeiroBtn) {
+                    cadastroBarbeiroBtn.style.display = 'none';
+                }
+                
+                // Ocultar CTA de cadastro no final
+                if (ctaSection) {
+                    ctaSection.style.display = 'none';
+                }
+                
+                // Atualizar texto do botão principal baseado no tipo de usuário
+                const agendarBtn = document.querySelector('.hero-buttons a[href="pages/agendamento.html"]');
+                if (agendarBtn) {
+                    if (user.tipo === 'barbeiro') {
+                        agendarBtn.textContent = 'Meu Painel';
+                        agendarBtn.href = 'pages/painel-barbeiro.html';
+                        agendarBtn.innerHTML = '<i class="fas fa-chart-line"></i> Meu Painel';
+                    } else {
+                        agendarBtn.textContent = 'Meus Agendamentos';
+                        agendarBtn.href = 'pages/painel.html';
+                        agendarBtn.innerHTML = '<i class="fas fa-calendar"></i> Meus Agendamentos';
+                    }
+                }
+                
+                // Adicionar mensagem de boas-vindas na hero
+                const heroContent = document.querySelector('.hero-content');
+                const welcomeMessage = document.querySelector('.welcome-message');
+                
+                if (heroContent && !welcomeMessage) {
+                    const welcome = document.createElement('div');
+                    welcome.className = 'welcome-message';
+                    welcome.innerHTML = `
+                        <p style="color: #667eea; font-size: 1.1rem; margin-bottom: 10px;">
+                            <i class="fas fa-user-circle"></i> Bem-vindo(a), <strong>${user.nome.split(' ')[0]}</strong>!
+                        </p>
+                    `;
+                    heroContent.insertBefore(welcome, heroContent.firstChild);
+                }
+                
+            } else {
+                // Mostrar elementos para usuários não autenticados
+                if (cadastroLink) {
+                    cadastroLink.parentElement.style.display = '';
+                }
+                if (loginLink) {
+                    loginLink.parentElement.style.display = '';
+                }
+                
+                // OCULTAR links de agendamento e painel quando NÃO está logado
+                if (agendamentoLink) {
+                    agendamentoLink.parentElement.style.display = 'none';
+                }
+                if (painelLink) {
+                    painelLink.parentElement.style.display = 'none';
+                }
+                
+                if (heroCadastro) {
+                    heroCadastro.style.display = '';
+                }
+                if (cadastroBarbeiroBtn) {
+                    cadastroBarbeiroBtn.style.display = '';
+                }
+                if (ctaSection) {
+                    ctaSection.style.display = '';
+                }
+                
+                // Remover mensagem de boas-vindas se existir
+                const welcomeMessage = document.querySelector('.welcome-message');
+                if (welcomeMessage) {
+                    welcomeMessage.remove();
+                }
+                
+                // Restaurar botão original
+                const agendarBtn = document.querySelector('.hero-buttons a[href="pages/painel.html"], .hero-buttons a[href="pages/painel-barbeiro.html"]');
+                if (agendarBtn) {
+                    agendarBtn.textContent = 'Agendar Agora';
+                    agendarBtn.href = 'pages/agendamento.html';
+                    agendarBtn.innerHTML = 'Agendar Agora';
+                }
+            }
+        }
+    </script>
 </body>
 </html>

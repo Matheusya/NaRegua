@@ -9,10 +9,20 @@ let agendamentoAtual = {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Verificar se está logado
+    if (!window.auth || !window.auth.requireAuth()) {
+        return;
+    }
+
     initializeAgendamento();
     setupEventListeners();
-    carregarClientesExistentes();
+    carregarUsuarioLogado();
     definirDataMinima();
+});
+
+// Recarregar dados do usuário quando a sessão for recarregada
+window.addEventListener('sessionLoaded', function() {
+    carregarUsuarioLogado();
 });
 
 function initializeAgendamento() {
@@ -58,20 +68,25 @@ function setupEventListeners() {
     document.getElementById('confirmarAgendamento').addEventListener('click', confirmarAgendamento);
 }
 
-function carregarClientesExistentes() {
-    const select = document.getElementById('clienteExistente');
-    const clientes = window.db.getClientes();
+function carregarUsuarioLogado() {
+    const user = window.auth.getCurrentUser();
     
-    // Limpar opções existentes
-    select.innerHTML = '<option value="">Selecione um cliente cadastrado</option>';
-    
-    // Adicionar clientes
-    clientes.forEach(cliente => {
-        const option = document.createElement('option');
-        option.value = cliente.id;
-        option.textContent = `${cliente.nome} - ${cliente.telefone}`;
-        select.appendChild(option);
-    });
+    if (user) {
+        // Preencher automaticamente com dados do usuário logado
+        agendamentoAtual.cliente = user;
+        
+        // Ocultar seção de seleção de cliente
+        const clienteSection = document.querySelector('.step-card:first-child');
+        if (clienteSection) {
+            clienteSection.style.display = 'none';
+        }
+        
+        // Mostrar mensagem de boas-vindas
+        const pageHeader = document.querySelector('.page-header p');
+        if (pageHeader) {
+            pageHeader.textContent = `Olá, ${user.nome}! Escolha o melhor horário para seu corte.`;
+        }
+    }
 }
 
 function definirDataMinima() {
@@ -252,21 +267,20 @@ function atualizarResumo() {
 
 function confirmarAgendamento() {
     try {
-        // Se é um novo cliente, cadastrá-lo primeiro
-        if (agendamentoAtual.cliente.novo) {
-            const novoCliente = window.db.addCliente({
-                nome: agendamentoAtual.cliente.nome,
-                telefone: agendamentoAtual.cliente.telefone,
-                email: `${agendamentoAtual.cliente.nome.toLowerCase().replace(/\s+/g, '')}@temp.com` // Email temporário
-            });
-            agendamentoAtual.cliente = novoCliente;
+        const user = window.auth.getCurrentUser();
+        
+        if (!user) {
+            Utils.showNotification('Você precisa estar logado para fazer um agendamento.', 'error');
+            window.location.href = 'login.html';
+            return;
         }
         
-        // Criar agendamento
+        // Criar agendamento usando dados do usuário logado
         const agendamento = {
-            clienteId: agendamentoAtual.cliente.id,
-            clienteNome: agendamentoAtual.cliente.nome,
-            clienteTelefone: agendamentoAtual.cliente.telefone,
+            clienteId: user.id,
+            clienteNome: user.nome,
+            clienteTelefone: user.telefone,
+            clienteEmail: user.email,
             servico: agendamentoAtual.servico.id,
             servicoNome: agendamentoAtual.servico.nome,
             barbeiro: agendamentoAtual.barbeiro.id,

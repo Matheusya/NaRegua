@@ -246,6 +246,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             Utils.showNotification('Cliente cadastrado com sucesso!', 'success');
             
+            // Fazer login automático
+            window.auth.login(cliente.email, cliente.senha);
+            
             // Mostrar modal de sucesso
             openModal('successModal');
             

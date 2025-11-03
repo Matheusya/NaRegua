@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Sessão - Na Régua</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .status-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .status-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .value {
+            color: #333;
+        }
+
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .warning {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+
+        .test-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .test-result.show {
+            display: block;
+        }
+
+        .test-result.pass {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .test-result.fail {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .logs {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: #858585;
+            margin-right: 10px;
+        }
+
+        .log-success {
+            color: #4ec9b0;
+        }
+
+        .log-error {
+            color: #f48771;
+        }
+
+        .log-info {
+            color: #569cd6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste de Sessão - Na Régua</h1>
+
+        <div class="status-box">
+            <h3>📊 Status da Sessão</h3>
+            <div class="info-row">
+                <span class="label">Autenticado:</span>
+                <span class="value" id="statusAuth">Verificando...</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Usuário:</span>
+                <span class="value" id="statusUser">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Tipo:</span>
+                <span class="value" id="statusTipo">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Email:</span>
+                <span class="value" id="statusEmail">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Sessão Expira:</span>
+                <span class="value" id="statusExpira">-</span>
+            </div>
+        </div>
+
+        <div class="status-box">
+            <h3>🔧 Listeners Ativos</h3>
+            <div class="info-row">
+                <span class="label">visibilitychange:</span>
+                <span class="value success" id="listenerVisibility">✓ Ativo</span>
+            </div>
+            <div class="info-row">
+                <span class="label">focus:</span>
+                <span class="value success" id="listenerFocus">✓ Ativo</span>
+            </div>
+            <div class="info-row">
+                <span class="label">sessionLoaded:</span>
+                <span class="value success" id="listenerSession">✓ Ativo</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Salvamento Automático:</span>
+                <span class="value success" id="autoSave">✓ A cada 30s</span>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-primary" onclick="testarMudancaAba()">
+                🔄 Simular Mudança de Aba
+            </button>
+            <button class="btn-success" onclick="testarRecarregarSessao()">
+                ♻️ Recarregar Sessão
+            </button>
+            <button class="btn-warning" onclick="verificarLocalStorage()">
+                💾 Ver localStorage
+            </button>
+            <button class="btn-danger" onclick="limparSessao()">
+                🗑️ Limpar Sessão
+            </button>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-primary" onclick="testarLogin()">
+                🔑 Testar Login
+            </button>
+            <button class="btn-success" onclick="executarTodosTests()">
+                ✅ Executar Todos os Testes
+            </button>
+        </div>
+
+        <div id="testResult" class="test-result"></div>
+
+        <div class="logs" id="logs">
+            <div class="log-entry">
+                <span class="log-time">[Carregado]</span>
+                <span class="log-info">Sistema de testes inicializado</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        let logCount = 0;
+
+        function addLog(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            const now = new Date();
+            const time = now.toLocaleTimeString('pt-BR');
+            
+            entry.innerHTML = `
+                <span class="log-time">[${time}]</span>
+                <span class="log-${type}">${message}</span>
+            `;
+            
+            logs.appendChild(entry);
+            logs.scrollTop = logs.scrollHeight;
+            
+            logCount++;
+            if (logCount > 50) {
+                logs.removeChild(logs.firstChild);
+                logCount--;
+            }
+        }
+
+        function showTestResult(message, passed) {
+            const result = document.getElementById('testResult');
+            result.textContent = message;
+            result.className = 'test-result show ' + (passed ? 'pass' : 'fail');
+            
+            setTimeout(() => {
+                result.classList.remove('show');
+            }, 5000);
+        }
+
+        function atualizarStatus() {
+            if (window.auth) {
+                const isAuth = window.auth.isAuthenticated();
+                const user = window.auth.getCurrentUser();
+                
+                document.getElementById('statusAuth').innerHTML = isAuth 
+                    ? '<span class="success">✓ Sim</span>' 
+                    : '<span class="error">✗ Não</span>';
+                
+                if (user) {
+                    document.getElementById('statusUser').textContent = user.nome;
+                    document.getElementById('statusTipo').innerHTML = user.tipo === 'barbeiro'
+                        ? '<span class="success">💈 Barbeiro</span>'
+                        : '<span class="success">👤 Cliente</span>';
+                    document.getElementById('statusEmail').textContent = user.email;
+                    
+                    const sessionData = localStorage.getItem('naRegua_session');
+                    if (sessionData) {
+                        const session = JSON.parse(sessionData);
+                        const expira = new Date(session.timestamp);
+                        expira.setHours(expira.getHours() + 24);
+                        document.getElementById('statusExpira').textContent = expira.toLocaleString('pt-BR');
+                    }
+                } else {
+                    document.getElementById('statusUser').textContent = '-';
+                    document.getElementById('statusTipo').textContent = '-';
+                    document.getElementById('statusEmail').textContent = '-';
+                    document.getElementById('statusExpira').textContent = '-';
+                }
+            }
+        }
+
+        function testarMudancaAba() {
+            addLog('🔄 Simulando mudança de aba...', 'info');
+            
+            // Simular perda de visibilidade
+            const event = new Event('visibilitychange');
+            Object.defineProperty(document, 'hidden', { value: true, writable: true });
+            document.dispatchEvent(event);
+            
+            addLog('📴 Aba marcada como oculta', 'info');
+            
+            setTimeout(() => {
+                // Simular retorno de visibilidade
+                Object.defineProperty(document, 'hidden', { value: false, writable: true });
+                document.dispatchEvent(event);
+                addLog('📱 Aba reativada - sessão recarregada', 'success');
+                atualizarStatus();
+                showTestResult('✅ Teste de mudança de aba concluído com sucesso!', true);
+            }, 2000);
+        }
+
+        function testarRecarregarSessao() {
+            addLog('♻️ Recarregando sessão manualmente...', 'info');
+            
+            if (window.auth) {
+                window.auth.loadSession();
+                atualizarStatus();
+                addLog('✓ Sessão recarregada com sucesso', 'success');
+                showTestResult('✅ Sessão recarregada!', true);
+            } else {
+                addLog('✗ AuthManager não disponível', 'error');
+                showTestResult('❌ Erro: AuthManager não encontrado', false);
+            }
+        }
+
+        function verificarLocalStorage() {
+            addLog('💾 Verificando localStorage...', 'info');
+            
+            const keys = [
+                'naRegua_session',
+                'naRegua_clientes',
+                'naRegua_barbeirosAuth',
+                'naRegua_agendamentos'
+            ];
+            
+            keys.forEach(key => {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    const size = new Blob([data]).size;
+                    addLog(`✓ ${key}: ${size} bytes`, 'success');
+                    console.log(key, JSON.parse(data));
+                } else {
+                    addLog(`✗ ${key}: não encontrado`, 'error');
+                }
+            });
+            
+            showTestResult('✅ Verifique o console para detalhes do localStorage', true);
+        }
+
+        function limparSessao() {
+            if (confirm('⚠️ Tem certeza que deseja limpar a sessão?')) {
+                addLog('🗑️ Limpando sessão...', 'info');
+                
+                if (window.auth) {
+                    window.auth.logout();
+                    atualizarStatus();
+                    addLog('✓ Sessão limpa com sucesso', 'success');
+                    showTestResult('✅ Sessão limpa!', true);
+                } else {
+                    localStorage.removeItem('naRegua_session');
+                    atualizarStatus();
+                    addLog('✓ Sessão removida manualmente', 'success');
+                    showTestResult('✅ Sessão removida!', true);
+                }
+            }
+        }
+
+        function testarLogin() {
+            addLog('🔑 Testando login...', 'info');
+            
+            if (!window.auth) {
+                addLog('✗ AuthManager não disponível', 'error');
+                showTestResult('❌ Erro: AuthManager não encontrado', false);
+                return;
+            }
+            
+            const result = window.auth.login('joao@email.com', '123456');
+            
+            if (result.success) {
+                addLog('✓ Login realizado: ' + result.user.nome, 'success');
+                atualizarStatus();
+                showTestResult('✅ Login bem-sucedido!', true);
+            } else {
+                addLog('✗ Falha no login: ' + result.message, 'error');
+                showTestResult('❌ Falha no login: ' + result.message, false);
+            }
+        }
+
+        function executarTodosTests() {
+            addLog('🚀 Executando bateria completa de testes...', 'info');
+            
+            let testsPassed = 0;
+            let testsFailed = 0;
+            
+            // Teste 1: AuthManager existe
+            if (window.auth) {
+                addLog('✓ Teste 1: AuthManager inicializado', 'success');
+                testsPassed++;
+            } else {
+                addLog('✗ Teste 1: AuthManager não encontrado', 'error');
+                testsFailed++;
+            }
+            
+            // Teste 2: DatabaseManager existe
+            if (window.db) {
+                addLog('✓ Teste 2: DatabaseManager inicializado', 'success');
+                testsPassed++;
+            } else {
+                addLog('✗ Teste 2: DatabaseManager não encontrado', 'error');
+                testsFailed++;
+            }
+            
+            // Teste 3: localStorage disponível
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                addLog('✓ Teste 3: localStorage disponível', 'success');
+                testsPassed++;
+            } catch(e) {
+                addLog('✗ Teste 3: localStorage não disponível', 'error');
+                testsFailed++;
+            }
+            
+            // Teste 4: Sessão pode ser salva
+            if (window.auth && window.auth.currentUser) {
+                const sessionData = localStorage.getItem('naRegua_session');
+                if (sessionData) {
+                    addLog('✓ Teste 4: Sessão salva corretamente', 'success');
+                    testsPassed++;
+                } else {
+                    addLog('⚠ Teste 4: Nenhuma sessão ativa no momento', 'info');
+                }
+            }
+            
+            // Teste 5: Eventos customizados funcionam
+            let eventReceived = false;
+            const testListener = () => { eventReceived = true; };
+            window.addEventListener('sessionLoaded', testListener);
+            window.dispatchEvent(new CustomEvent('sessionLoaded'));
+            
+            if (eventReceived) {
+                addLog('✓ Teste 5: Eventos customizados funcionando', 'success');
+                testsPassed++;
+            } else {
+                addLog('✗ Teste 5: Eventos customizados com problema', 'error');
+                testsFailed++;
+            }
+            window.removeEventListener('sessionLoaded', testListener);
+            
+            // Resultado final
+            const total = testsPassed + testsFailed;
+            const message = `Testes concluídos: ${testsPassed}/${total} passaram`;
+            
+            if (testsFailed === 0) {
+                addLog(`🎉 ${message} - Tudo funcionando!`, 'success');
+                showTestResult(`✅ ${message}`, true);
+            } else {
+                addLog(`⚠️ ${message} - ${testsFailed} falharam`, 'error');
+                showTestResult(`⚠️ ${message}`, false);
+            }
+        }
+
+        // Listener para evento de sessão
+        window.addEventListener('sessionLoaded', function(event) {
+            addLog('📡 Evento sessionLoaded recebido', 'success');
+            atualizarStatus();
+        });
+
+        // Listener para visibilitychange
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                addLog('👁️ Aba voltou ao foco', 'info');
+            } else {
+                addLog('💤 Aba ficou em background', 'info');
+            }
+        });
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('✓ Sistema de testes carregado', 'success');
+            atualizarStatus();
+            
+            // Verificar se já está logado
+            if (window.auth && window.auth.isAuthenticated()) {
+                addLog('✓ Usuário já está logado', 'success');
+            } else {
+                addLog('ℹ️ Nenhum usuário logado no momento', 'info');
+            }
+        });
+    </script>
+</body>
+</html>

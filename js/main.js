@@ -10,6 +10,7 @@ const DEFAULT_DATA = {
             email: "joao@email.com",
             telefone: "(11) 99999-1111",
             dataNascimento: "1985-03-15",
+            senha: "123456",
             dataCadastro: new Date().toISOString()
         },
         {
@@ -18,6 +19,7 @@ const DEFAULT_DATA = {
             email: "maria@email.com",
             telefone: "(11) 99999-2222",
             dataNascimento: "1990-07-22",
+            senha: "123456",
             dataCadastro: new Date().toISOString()
         }
     ],
@@ -112,6 +114,9 @@ class DatabaseManager {
         if (!localStorage.getItem('naRegua_barbeiros')) {
             localStorage.setItem('naRegua_barbeiros', JSON.stringify(DEFAULT_DATA.barbeiros));
         }
+        if (!localStorage.getItem('naRegua_barbeirosAuth')) {
+            localStorage.setItem('naRegua_barbeirosAuth', JSON.stringify([]));
+        }
         if (!localStorage.getItem('naRegua_servicos')) {
             localStorage.setItem('naRegua_servicos', JSON.stringify(DEFAULT_DATA.servicos));
         }
@@ -147,7 +152,7 @@ class DatabaseManager {
         return clientes.find(cliente => cliente.id == id);
     }
 
-    // Métodos para barbeiros
+    // Métodos para barbeiros (dados públicos para agendamento)
     getBarbeiros() {
         return JSON.parse(localStorage.getItem('naRegua_barbeiros') || '[]');
     }
@@ -155,6 +160,108 @@ class DatabaseManager {
     getBarbeiroById(id) {
         const barbeiros = this.getBarbeiros();
         return barbeiros.find(barbeiro => barbeiro.id === id);
+    }
+
+    // Métodos para barbeiros autenticados (incluem senha e dados privados)
+    getBarbeirosAuth() {
+        return JSON.parse(localStorage.getItem('naRegua_barbeirosAuth') || '[]');
+    }
+
+    addBarbeiro(barbeiro) {
+        const barbeirosAuth = this.getBarbeirosAuth();
+        
+        // Adicionar aos barbeiros autenticados (com senha)
+        barbeirosAuth.push(barbeiro);
+        localStorage.setItem('naRegua_barbeirosAuth', JSON.stringify(barbeirosAuth));
+        
+        // Adicionar aos barbeiros públicos (sem senha)
+        const barbeiros = this.getBarbeiros();
+        const barbeiroPublico = {
+            id: barbeiro.id,
+            nome: barbeiro.nome,
+            especialidades: [barbeiro.especialidade],
+            rating: barbeiro.rating || 5.0,
+            descricao: barbeiro.descricao,
+            totalAtendimentos: barbeiro.totalAtendimentos || 0,
+            disponibilidade: this.gerarDisponibilidade(
+                barbeiro.diasDisponiveis, 
+                barbeiro.horarioInicio, 
+                barbeiro.horarioFim
+            )
+        };
+        barbeiros.push(barbeiroPublico);
+        localStorage.setItem('naRegua_barbeiros', JSON.stringify(barbeiros));
+        
+        return barbeiro;
+    }
+
+    getBarbeiroAuthById(id) {
+        const barbeiros = this.getBarbeirosAuth();
+        return barbeiros.find(b => b.id === id);
+    }
+
+    updateBarbeiro(id, updates) {
+        // Atualizar barbeiro autenticado
+        const barbeirosAuth = this.getBarbeirosAuth();
+        const indexAuth = barbeirosAuth.findIndex(b => b.id === id);
+        
+        if (indexAuth !== -1) {
+            barbeirosAuth[indexAuth] = { ...barbeirosAuth[indexAuth], ...updates };
+            localStorage.setItem('naRegua_barbeirosAuth', JSON.stringify(barbeirosAuth));
+            
+            // Atualizar também nos barbeiros públicos
+            const barbeiros = this.getBarbeiros();
+            const indexPublic = barbeiros.findIndex(b => b.id === id);
+            
+            if (indexPublic !== -1) {
+                const barbeiroAtualizado = barbeirosAuth[indexAuth];
+                barbeiros[indexPublic] = {
+                    ...barbeiros[indexPublic],
+                    nome: barbeiroAtualizado.nome,
+                    especialidades: [barbeiroAtualizado.especialidade],
+                    rating: barbeiroAtualizado.rating,
+                    descricao: barbeiroAtualizado.descricao,
+                    totalAtendimentos: barbeiroAtualizado.totalAtendimentos
+                };
+                localStorage.setItem('naRegua_barbeiros', JSON.stringify(barbeiros));
+            }
+            
+            return barbeirosAuth[indexAuth];
+        }
+        return null;
+    }
+
+    gerarDisponibilidade(dias, horarioInicio, horarioFim) {
+        const disponibilidade = {};
+        const [horaInicio, minInicio] = horarioInicio.split(':').map(Number);
+        const [horaFim, minFim] = horarioFim.split(':').map(Number);
+        
+        const horarios = [];
+        let hora = horaInicio;
+        let min = minInicio;
+        
+        while (hora < horaFim || (hora === horaFim && min < minFim)) {
+            horarios.push(`${String(hora).padStart(2, '0')}:${String(min).padStart(2, '0')}`);
+            min += 30; // Intervalos de 30 minutos
+            if (min >= 60) {
+                min = 0;
+                hora++;
+            }
+        }
+        
+        dias.forEach(dia => {
+            disponibilidade[dia] = [...horarios];
+        });
+        
+        // Preencher dias não selecionados com array vazio
+        const todosDias = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
+        todosDias.forEach(dia => {
+            if (!disponibilidade[dia]) {
+                disponibilidade[dia] = [];
+            }
+        });
+        
+        return disponibilidade;
     }
 
     // Métodos para serviços
@@ -316,6 +423,9 @@ class Utils {
 
 // Inicializar navegação mobile
 document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar database primeiro
+    window.db = new DatabaseManager();
+    
     // Hamburger menu
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
@@ -334,9 +444,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-
-    // Inicializar database
-    window.db = new DatabaseManager();
     
     // Aplicar máscaras em campos de telefone
     document.querySelectorAll('input[type="tel"]').forEach(input => {

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Na Régua</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <i class="fas fa-cut"></i>
+                    <span>Na Régua</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="../index.html" class="nav-link">Início</a></li>
+                    <li><a href="cadastro.html" class="nav-link">Cadastro</a></li>
+                    <li><a href="login.html" class="nav-link active">Login</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-main">
+        <div class="container">
+            <div class="login-container">
+                <div class="login-header">
+                    <div class="login-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h1>Bem-vindo de volta!</h1>
+                    <p>Faça login para acessar sua conta</p>
+                </div>
+
+                <div class="form-container">
+                    <form id="loginForm" class="form-card">
+                        <div class="form-group">
+                            <label for="email">
+                                <i class="fas fa-envelope"></i>
+                                Email
+                            </label>
+                            <input type="email" id="email" name="email" required placeholder="seu@email.com">
+                            <span class="error-message" id="email-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="senha">
+                                <i class="fas fa-lock"></i>
+                                Senha
+                            </label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="senha" name="senha" required placeholder="Digite sua senha">
+                                <button type="button" class="toggle-password" onclick="togglePassword()">
+                                    <i class="fas fa-eye" id="toggleIcon"></i>
+                                </button>
+                            </div>
+                            <span class="error-message" id="senha-error"></span>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="lembrar" name="lembrar">
+                                <span class="checkmark"></span>
+                                Lembrar-me
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Entrar
+                            </button>
+                        </div>
+
+                        <div class="form-links">
+                            <a href="#" class="link" onclick="esqueceuSenha(event)">Esqueceu a senha?</a>
+                        </div>
+                    </form>
+
+                    <div class="form-footer">
+                        <p>Não tem uma conta? <a href="cadastro.html" class="link">Cadastre-se aqui</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-cut"></i>
+                    <span>Na Régua</span>
+                </div>
+                <p>&copy; 2025 Na Régua. Sistema de Agendamento para Barbearias.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/login.js"></script>
+</body>
+</html>
