@@ -300,11 +300,13 @@ function hideError(errorElement) {
 }
 
 function redirectToPainel() {
-    window.location.href = 'painel-barbeiro.html';
+    window.location.href = '../index.html';
 }
 
 function closeModal() {
     const modal = document.getElementById('successModal');
     modal.style.display = 'none';
     document.body.style.overflow = 'auto';
+    // Redirecionar para a página inicial
+    window.location.href = '../index.html';
 }

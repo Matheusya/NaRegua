@@ -66,6 +66,12 @@ function fazerLogin() {
 
     // Tentar autenticar
     try {
+        // Verificar se window.auth existe
+        if (!window.auth) {
+            console.error('window.auth não está definido');
+            throw new Error('Sistema de autenticação não carregado');
+        }
+
         const resultado = window.auth.login(email, senha);
 
         if (resultado.success) {

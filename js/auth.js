@@ -67,6 +67,15 @@ class AuthManager {
 
     // Fazer login
     login(email, senha) {
+        // Verificar se window.db está disponível
+        if (!window.db) {
+            console.error('Database manager não está disponível');
+            return {
+                success: false,
+                message: 'Sistema não inicializado. Recarregue a página.'
+            };
+        }
+
         // Tentar encontrar nos clientes
         const clientes = window.db.getClientes();
         const cliente = clientes.find(c => c.email.toLowerCase() === email.toLowerCase());
@@ -183,7 +192,18 @@ class AuthManager {
 }
 
 // Inicializar gerenciador de autenticação
-window.auth = new AuthManager();
+// Aguardar o DOM e window.db estarem prontos
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!window.auth) {
+            window.auth = new AuthManager();
+        }
+    });
+} else {
+    if (!window.auth) {
+        window.auth = new AuthManager();
+    }
+}
 
 // Adicionar função para mostrar informações do usuário logado
 function mostrarUsuarioLogado() {
@@ -194,24 +214,28 @@ function mostrarUsuarioLogado() {
         if (navbar && !document.querySelector('.user-info')) {
             const userInfo = document.createElement('li');
             userInfo.className = 'user-info';
+            // Adicionar classe especial se for barbeiro
+            if (user.tipo === 'barbeiro') {
+                userInfo.classList.add('user-info-barbeiro');
+            }
+            
             userInfo.innerHTML = `
                 <div class="user-dropdown">
-                    <button class="user-button">
-                        <i class="fas fa-user-circle"></i>
+                    <button class="user-button ${user.tipo === 'barbeiro' ? 'barbeiro-button' : ''}">
+                        <i class="fas ${user.tipo === 'barbeiro' ? 'fa-cut' : 'fa-user-circle'}"></i>
                         <span>${user.nome.split(' ')[0]}</span>
+                        ${user.tipo === 'barbeiro' ? '<span class="badge-barbeiro">💈 Barbeiro</span>' : ''}
                         <i class="fas fa-chevron-down"></i>
                     </button>
-                    <div class="user-menu">
-                        <div class="user-menu-header">
+                    <div class="user-menu ${user.tipo === 'barbeiro' ? 'user-menu-barbeiro' : ''}">
+                        <div class="user-menu-header ${user.tipo === 'barbeiro' ? 'barbeiro-header' : ''}">
                             <strong>${user.nome}</strong>
                             <small>${user.email}</small>
+                            ${user.tipo === 'barbeiro' ? '<span class="badge-tipo">💈 Profissional</span>' : '<span class="badge-tipo">👤 Cliente</span>'}
                         </div>
                         <div class="user-menu-items">
                             ${user.tipo === 'barbeiro' ? `
-                                <a href="painel-barbeiro.html">
-                                    <i class="fas fa-chart-line"></i>
-                                    Painel do Barbeiro
-                                </a>
+                                <!-- Barbeiro: apenas logout -->
                             ` : `
                                 <a href="painel.html">
                                     <i class="fas fa-calendar"></i>
@@ -222,10 +246,6 @@ function mostrarUsuarioLogado() {
                                     Novo Agendamento
                                 </a>
                             `}
-                            <a href="#" onclick="editarPerfil(event)">
-                                <i class="fas fa-user-edit"></i>
-                                Editar Perfil
-                            </a>
                             <a href="#" onclick="fazerLogout(event)">
                                 <i class="fas fa-sign-out-alt"></i>
                                 Sair
@@ -279,9 +299,63 @@ function fazerLogout(event) {
     }
 }
 
-function editarPerfil(event) {
-    if (event) event.preventDefault();
-    Utils.showNotification('Funcionalidade em desenvolvimento', 'info');
+// Função para atualizar visibilidade dos links do menu baseado no tipo de usuário
+function atualizarMenuPorTipo() {
+    if (!window.auth || !window.auth.isAuthenticated()) {
+        return;
+    }
+
+    const user = window.auth.getCurrentUser();
+    if (!user) {
+        return;
+    }
+
+    // Elementos do menu (podem estar em páginas diferentes, por isso os diferentes seletores)
+    const cadastroLinks = document.querySelectorAll('a[href="cadastro.html"], a[href="../pages/cadastro.html"], a[href="pages/cadastro.html"]');
+    const loginLinks = document.querySelectorAll('a[href="login.html"], a[href="../pages/login.html"], a[href="pages/login.html"]');
+    const agendamentoLinks = document.querySelectorAll('a[href="agendamento.html"], a[href="../pages/agendamento.html"], a[href="pages/agendamento.html"]');
+    const painelLinks = document.querySelectorAll('a[href="painel.html"], a[href="../pages/painel.html"], a[href="pages/painel.html"]');
+
+    // Ocultar Cadastro e Login quando estiver logado (independente do tipo)
+    cadastroLinks.forEach(link => {
+        if (link.parentElement && link.parentElement.tagName === 'LI') {
+            link.parentElement.style.display = 'none';
+        }
+    });
+    
+    loginLinks.forEach(link => {
+        if (link.parentElement && link.parentElement.tagName === 'LI') {
+            link.parentElement.style.display = 'none';
+        }
+    });
+
+    if (user.tipo === 'barbeiro') {
+        // BARBEIRO: Ocultar Agendamento, manter apenas Painel
+        agendamentoLinks.forEach(link => {
+            if (link.parentElement && link.parentElement.tagName === 'LI') {
+                link.parentElement.style.display = 'none';
+            }
+        });
+        
+        painelLinks.forEach(link => {
+            if (link.parentElement && link.parentElement.tagName === 'LI') {
+                link.parentElement.style.display = '';
+            }
+        });
+    } else {
+        // CLIENTE: Mostrar Agendamento e Painel
+        agendamentoLinks.forEach(link => {
+            if (link.parentElement && link.parentElement.tagName === 'LI') {
+                link.parentElement.style.display = '';
+            }
+        });
+        
+        painelLinks.forEach(link => {
+            if (link.parentElement && link.parentElement.tagName === 'LI') {
+                link.parentElement.style.display = '';
+            }
+        });
+    }
 }
 
 // Executar ao carregar a página
@@ -289,5 +363,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mostrar usuário logado se estiver autenticado
     if (window.auth && window.auth.isAuthenticated()) {
         mostrarUsuarioLogado();
+        atualizarMenuPorTipo();
     }
+});
+
+// Atualizar também quando a sessão for recarregada
+window.addEventListener('sessionLoaded', function() {
+    atualizarMenuPorTipo();
 });

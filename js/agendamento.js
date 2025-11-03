@@ -9,21 +9,102 @@ let agendamentoAtual = {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Verificar se está logado
+    // Sempre inicializar o agendamento e carregar barbeiros primeiro
+    initializeAgendamento();
+    carregarBarbeiros();
+    setupEventListeners();
+    definirDataMinima();
+    
+    // Verificar se está logado depois
     if (!window.auth || !window.auth.requireAuth()) {
         return;
     }
 
-    initializeAgendamento();
-    setupEventListeners();
     carregarUsuarioLogado();
-    definirDataMinima();
 });
 
 // Recarregar dados do usuário quando a sessão for recarregada
 window.addEventListener('sessionLoaded', function() {
     carregarUsuarioLogado();
+    carregarBarbeiros(); // Recarregar barbeiros também
 });
+
+function carregarBarbeiros() {
+    const barbeiros = window.db.getBarbeiros();
+    const barbeirosGrid = document.querySelector('.barbeiros-grid');
+    
+    // Limpar barbeiros existentes
+    barbeirosGrid.innerHTML = '';
+    
+    // Carregar barbeiros do banco de dados
+    barbeiros.forEach(barbeiro => {
+        const barbeiroCard = document.createElement('div');
+        barbeiroCard.className = 'barbeiro-card';
+        barbeiroCard.dataset.barbeiro = barbeiro.id;
+        
+        // Gerar estrelas baseado no rating
+        const stars = generateStars(barbeiro.rating);
+        
+        // Formatar especialidades
+        const especialidades = Array.isArray(barbeiro.especialidades) 
+            ? barbeiro.especialidades.join(', ') 
+            : barbeiro.especialidades || 'Barbeiro profissional';
+        
+        barbeiroCard.innerHTML = `
+            <div class="barbeiro-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h3>${barbeiro.nome}</h3>
+            <p>${barbeiro.descricao || `Especialista em ${especialidades}`}</p>
+            <div class="barbeiro-rating">
+                ${stars}
+                <span>${barbeiro.rating.toFixed(1)}</span>
+            </div>
+            ${barbeiro.totalAtendimentos ? `<div class="atendimentos">${barbeiro.totalAtendimentos} atendimentos</div>` : ''}
+        `;
+        
+        // Adicionar event listener
+        barbeiroCard.addEventListener('click', function() {
+            selecionarBarbeiro(this);
+        });
+        
+        barbeirosGrid.appendChild(barbeiroCard);
+    });
+    
+    // Se não há barbeiros cadastrados, mostrar mensagem
+    if (barbeiros.length === 0) {
+        barbeirosGrid.innerHTML = `
+            <div class="no-barbeiros">
+                <p>Nenhum barbeiro disponível no momento.</p>
+                <p>Entre em contato com a administração.</p>
+            </div>
+        `;
+    }
+}
+
+function generateStars(rating) {
+    let stars = '';
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+    
+    // Estrelas cheias
+    for (let i = 0; i < fullStars; i++) {
+        stars += '<i class="fas fa-star"></i>';
+    }
+    
+    // Meia estrela
+    if (hasHalfStar) {
+        stars += '<i class="fas fa-star-half-alt"></i>';
+    }
+    
+    // Estrelas vazias
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+        stars += '<i class="far fa-star"></i>';
+    }
+    
+    return stars;
+}
 
 function initializeAgendamento() {
     // Resetar estado do agendamento
@@ -51,13 +132,6 @@ function setupEventListeners() {
     document.querySelectorAll('.servico-card').forEach(card => {
         card.addEventListener('click', function() {
             selecionarServico(this);
-        });
-    });
-
-    // Seleção de barbeiros
-    document.querySelectorAll('.barbeiro-card').forEach(card => {
-        card.addEventListener('click', function() {
-            selecionarBarbeiro(this);
         });
     });
 

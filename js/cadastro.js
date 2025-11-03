@@ -264,11 +264,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Funções globais para o modal
 function redirectToAgendamento() {
-    window.location.href = 'agendamento.html';
+    window.location.href = '../index.html';
 }
 
 function closeModal() {
     const modal = document.getElementById('successModal');
     modal.style.display = 'none';
     document.body.style.overflow = 'auto';
+    // Redirecionar para a página inicial
+    window.location.href = '../index.html';
 }

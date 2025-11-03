@@ -742,6 +742,32 @@ section h2 {
     color: var(--border-color);
 }
 
+.atendimentos {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.no-barbeiros {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem;
+    background: #f8f9fa;
+    border: 1px dashed var(--border-color);
+    border-radius: 10px;
+    color: var(--text-color);
+}
+
+.no-barbeiros p {
+    margin-bottom: 0.5rem;
+}
+
+.no-barbeiros p:last-child {
+    margin-bottom: 0;
+    font-style: italic;
+}
+
 .datetime-selection {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -1539,6 +1565,89 @@ footer {
 .user-menu-items i {
     width: 20px;
     text-align: center;
+}
+
+/* Estilos específicos para BARBEIRO */
+.user-info-barbeiro .user-button {
+    background: linear-gradient(135deg, #ff8c00, #ffd700) !important;
+    border: 2px solid #ff8c00;
+    color: white;
+    font-weight: 600;
+}
+
+.barbeiro-button {
+    position: relative;
+}
+
+.badge-barbeiro {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.3);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    margin-left: 5px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.user-menu-barbeiro {
+    border: 2px solid #ff8c00 !important;
+}
+
+.barbeiro-header {
+    background: linear-gradient(135deg, #ff8c00, #ffa500) !important;
+    color: white;
+}
+
+.barbeiro-header small {
+    color: #fff9e6 !important;
+}
+
+.badge-tipo {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    margin-top: 8px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.user-menu-barbeiro .user-menu-items a:hover {
+    background: #fff5e6;
+    color: #ff8c00;
+}
+
+/* Mensagem de boas-vindas para barbeiro */
+.welcome-barbeiro {
+    background: linear-gradient(135deg, rgba(255, 140, 0, 0.15), rgba(255, 215, 0, 0.15)) !important;
+    border-left: 4px solid #ff8c00 !important;
+    animation: pulseOrange 2s infinite;
+}
+
+@keyframes pulseOrange {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 140, 0, 0.6);
+    }
+}
+
+.welcome-barbeiro i {
+    color: #ff8c00;
+    animation: rotate 3s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Notificações */
