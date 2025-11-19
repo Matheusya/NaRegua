@@ -24,8 +24,8 @@ const EMAIL_CONFIG = {
 };
 
 // Verificar se email está configurado
-const EMAIL_CONFIGURADO = EMAIL_CONFIG.auth.user !== 'seu-email@gmail.com' && 
-                          EMAIL_CONFIG.auth.pass !== 'sua-senha-app';
+const EMAIL_CONFIGURADO = EMAIL_CONFIG.auth.user !== 'matheusya31@gmail.com' && 
+                          EMAIL_CONFIG.auth.pass !== 'gemj ijae jost xupp';
 
 let transporter = null;
 
