@@ -67,23 +67,6 @@ O "Na Régua" é uma solução digital que moderniza o processo de agendamento e
 - **Armazenamento**: LocalStorage (simula banco de dados)
 - **Design**: Responsivo e Mobile-First
 
-## 📁 Estrutura do Projeto
-
-```
-na-regua/
-├── index.html              # Página inicial
-├── css/
-│   └── style.css           # Estilos principais
-├── js/
-│   ├── main.js            # Lógica principal e database
-│   ├── cadastro.js        # Funcionalidades de cadastro
-│   ├── agendamento.js     # Sistema de agendamento
-│   └── painel.js          # Painel administrativo
-├── pages/
-│   ├── cadastro.html      # Página de cadastro
-│   ├── agendamento.html   # Página de agendamento
-│   └── painel.html        # Painel de controle
-└── README.md              # Este arquivo
 ```
 
 Este projeto foi desenvolvido como trabalho acadêmico, demonstrando:
@@ -95,14 +78,6 @@ Este projeto foi desenvolvido como trabalho acadêmico, demonstrando:
 - **Validações**: Tratamento de erros e dados inválidos
 - **Responsividade**: Adaptação para diferentes dispositivos
 
-## 📞 Suporte
-
-Para dúvidas ou sugestões sobre este projeto acadêmico:
-
-- Consulte a documentação no código
-- Verifique os comentários nos arquivos JS
-- Teste as funcionalidades no navegador
-
 ## 📄 Licença
 
 Este é um projeto acadêmico desenvolvido para fins educacionais.
@@ -110,3 +85,4 @@ Este é um projeto acadêmico desenvolvido para fins educacionais.
 ---
 
 **Na Régua** - Modernizando o agendamento em barbearias! ✂️
+```
