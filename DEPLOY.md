@@ -64,6 +64,7 @@ fetch('https://naregua-api.onrender.com/api/cadastro/cliente', ...)
 ### **Passo 7: Hospedar o Frontend**
 
 **Opção A: GitHub Pages (Grátis)**
+
 1. Vá em Settings → Pages
 2. Source: Deploy from branch
 3. Branch: main, folder: / (root)
@@ -71,11 +72,13 @@ fetch('https://naregua-api.onrender.com/api/cadastro/cliente', ...)
 5. Seu site estará em: `https://matheusya.github.io/NaRegua`
 
 **Opção B: Vercel (Grátis)**
+
 1. Acesse: https://vercel.com
 2. Import projeto do GitHub
 3. Deploy automático!
 
 **Opção C: Netlify (Grátis)**
+
 1. Acesse: https://netlify.com
 2. Arraste a pasta do projeto
 3. Deploy instantâneo!
