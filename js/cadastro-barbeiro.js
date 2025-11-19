@@ -215,7 +215,7 @@ function validateForm() {
     return validations.every(v => v === true);
 }
 
-function cadastrarBarbeiro() {
+async function cadastrarBarbeiro() {
     const formData = new FormData(document.getElementById('cadastroBarbeiroForm'));
     
     // Coletar dias selecionados
@@ -234,6 +234,7 @@ function cadastrarBarbeiro() {
         telefone: formData.get('telefone'),
         dataNascimento: formData.get('dataNascimento'),
         especialidade: formData.get('especialidade'),
+        especialidades: [formData.get('especialidade')], // Array para compatibilidade com email
         experiencia: parseInt(formData.get('experiencia')),
         descricao: formData.get('descricao') || '',
         diasDisponiveis: diasSelecionados,
@@ -248,9 +249,37 @@ function cadastrarBarbeiro() {
     };
 
     try {
+        // Salvar no localStorage (fallback)
         const novoBarbeiro = window.db.addBarbeiro(barbeiro);
         
-        Utils.showNotification('Barbeiro cadastrado com sucesso!', 'success');
+        // Enviar para o backend
+        try {
+            const response = await fetch('http://localhost:3000/api/cadastro/barbeiro', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(barbeiro)
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                console.log('✅ Barbeiro cadastrado no servidor');
+                
+                if (result.emailEnviado) {
+                    Utils.showNotification('✅ Cadastro realizado! Verifique seu email para confirmação.', 'success');
+                } else {
+                    Utils.showNotification('✅ Cadastro realizado! (Email não enviado - configure o servidor)', 'success');
+                }
+            } else {
+                console.warn('⚠️ Erro no servidor:', result.message);
+                Utils.showNotification('Cadastro salvo localmente. ' + result.message, 'warning');
+            }
+        } catch (fetchError) {
+            console.warn('⚠️ Servidor offline. Cadastro salvo apenas localmente:', fetchError);
+            Utils.showNotification('✅ Cadastro salvo localmente! (Servidor offline - email não enviado)', 'success');
+        }
         
         // Fazer login automático
         window.auth.login(barbeiro.email, barbeiro.senha);
@@ -262,7 +291,7 @@ function cadastrarBarbeiro() {
         document.getElementById('cadastroBarbeiroForm').reset();
         
     } catch (error) {
-        console.error('Erro ao cadastrar barbeiro:', error);
+        console.error('❌ Erro ao cadastrar barbeiro:', error);
         Utils.showNotification('Erro ao cadastrar barbeiro. Tente novamente.', 'error');
     }
 }

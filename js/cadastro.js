@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
         errorElement.parentElement.querySelector('input, select').classList.remove('error');
     }
 
-    function cadastrarCliente() {
+    async function cadastrarCliente() {
         const formData = new FormData(form);
         
         const cliente = {
@@ -237,14 +237,42 @@ document.addEventListener('DOMContentLoaded', function() {
             email: formData.get('email'),
             telefone: formData.get('telefone'),
             dataNascimento: formData.get('dataNascimento'),
-            senha: formData.get('senha'), // Em um sistema real, a senha seria hasheada
+            senha: formData.get('senha'),
             newsletter: formData.get('newsletter') === 'on'
         };
 
         try {
+            // Salvar no localStorage (fallback)
             const novoCliente = window.db.addCliente(cliente);
             
-            Utils.showNotification('Cliente cadastrado com sucesso!', 'success');
+            // Enviar para o backend
+            try {
+                const response = await fetch('http://localhost:3000/api/cadastro/cliente', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(cliente)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('✅ Cliente cadastrado no servidor');
+                    
+                    if (result.emailEnviado) {
+                        Utils.showNotification('✅ Cadastro realizado! Verifique seu email para confirmação.', 'success');
+                    } else {
+                        Utils.showNotification('✅ Cadastro realizado! (Email não enviado - configure o servidor)', 'success');
+                    }
+                } else {
+                    console.warn('⚠️ Erro no servidor:', result.message);
+                    Utils.showNotification('Cadastro salvo localmente. ' + result.message, 'warning');
+                }
+            } catch (fetchError) {
+                console.warn('⚠️ Servidor offline. Cadastro salvo apenas localmente:', fetchError);
+                Utils.showNotification('✅ Cadastro salvo localmente! (Servidor offline - email não enviado)', 'success');
+            }
             
             // Fazer login automático
             window.auth.login(cliente.email, cliente.senha);
@@ -256,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
             form.reset();
             
         } catch (error) {
-            console.error('Erro ao cadastrar cliente:', error);
+            console.error('❌ Erro ao cadastrar cliente:', error);
             Utils.showNotification('Erro ao cadastrar cliente. Tente novamente.', 'error');
         }
     }

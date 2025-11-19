@@ -339,7 +339,7 @@ function atualizarResumo() {
     }
 }
 
-function confirmarAgendamento() {
+async function confirmarAgendamento() {
     try {
         const user = window.auth.getCurrentUser();
         
@@ -357,7 +357,7 @@ function confirmarAgendamento() {
             clienteEmail: user.email,
             servico: agendamentoAtual.servico.id,
             servicoNome: agendamentoAtual.servico.nome,
-            barbeiro: agendamentoAtual.barbeiro.id,
+            barbeiroId: agendamentoAtual.barbeiro.id,
             barbeiroNome: agendamentoAtual.barbeiro.nome,
             data: agendamentoAtual.data,
             horario: agendamentoAtual.horario,
@@ -365,16 +365,44 @@ function confirmarAgendamento() {
             valor: agendamentoAtual.servico.preco
         };
         
+        // Salvar no localStorage (fallback)
         const novoAgendamento = window.db.addAgendamento(agendamento);
+        
+        // Enviar para o backend
+        try {
+            const response = await fetch('http://localhost:3000/api/agendamento', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(agendamento)
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                console.log('✅ Agendamento salvo no servidor');
+                
+                if (result.emailEnviado) {
+                    Utils.showNotification('✅ Agendamento confirmado! Verifique seu email.', 'success');
+                } else {
+                    Utils.showNotification('✅ Agendamento confirmado! (Email não enviado - configure o servidor)', 'success');
+                }
+            } else {
+                console.warn('⚠️ Erro no servidor:', result.message);
+                Utils.showNotification('Agendamento salvo localmente.', 'warning');
+            }
+        } catch (fetchError) {
+            console.warn('⚠️ Servidor offline. Agendamento salvo apenas localmente:', fetchError);
+            Utils.showNotification('✅ Agendamento confirmado! (Servidor offline - email não enviado)', 'success');
+        }
         
         // Mostrar modal de confirmação
         document.getElementById('codigoAgendamento').textContent = novoAgendamento.codigo;
         openModal('confirmModal');
         
-        Utils.showNotification('Agendamento realizado com sucesso!', 'success');
-        
     } catch (error) {
-        console.error('Erro ao confirmar agendamento:', error);
+        console.error('❌ Erro ao confirmar agendamento:', error);
         Utils.showNotification('Erro ao realizar agendamento. Tente novamente.', 'error');
     }
 }
