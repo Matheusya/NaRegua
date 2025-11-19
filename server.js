@@ -5,20 +5,21 @@ const fs = require('fs').promises;
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Usar porta do Render ou 3000
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static('.')); // Servir arquivos estáticos (HTML, CSS, JS)
 
 // ========================================
 // CONFIGURAÇÃO DE EMAIL
 // ========================================
 // IMPORTANTE: Configure com suas credenciais reais
 const EMAIL_CONFIG = {
-    service: 'gmail', // ou 'outlook', 'yahoo', etc
+    service: 'gmail',
     auth: {
-        user: 'matheusya31@gmail.com', // Email configurado
-        pass: 'gemj ijae jost xupp' // Senha de aplicativo configurada
+        user: process.env.EMAIL_USER || 'matheusya31@gmail.com', // Usar variável de ambiente
+        pass: process.env.EMAIL_PASS || 'gemj ijae jost xupp' // Usar variável de ambiente
     }
 };
 

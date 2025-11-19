@@ -1,0 +1,22 @@
+# Dependências
+node_modules/
+
+# Dados locais (não enviar para o git)
+data/clientes.json
+data/barbeiros.json
+data/agendamentos.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Configurações do editor
+.vscode/
+.idea/
+
+# Variáveis de ambiente
+.env
