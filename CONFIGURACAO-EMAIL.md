@@ -7,19 +7,21 @@ Siga estes passos para corrigir:
 ## 📨 Quem Recebe os Emails?
 
 ### ✅ Cadastro de Cliente
+
 - **Email enviado para:** O cliente que se cadastrou
 - **Conteúdo:** Confirmação de cadastro + dados cadastrados
 
 ### ✅ Cadastro de Barbeiro
+
 - **Email enviado para:** O barbeiro que se cadastrou
 - **Conteúdo:** Confirmação de cadastro + dados profissionais
 
 ### ✅ Agendamento Realizado
+
 - **Email #1 enviado para:** O **cliente** que fez o agendamento
   - Confirmação do agendamento
   - Detalhes: data, hora, barbeiro, serviço
   - Link para ver seus agendamentos
-  
 - **Email #2 enviado para:** O **barbeiro** que foi escolhido
   - Notificação de novo agendamento
   - Dados do cliente (nome, telefone, email)

@@ -17,8 +17,8 @@ app.use(express.json());
 const EMAIL_CONFIG = {
     service: 'gmail', // ou 'outlook', 'yahoo', etc
     auth: {
-        user: 'seu-email@gmail.com', // ALTERE AQUI
-        pass: 'sua-senha-app' // ALTERE AQUI (use senha de aplicativo)
+        user: 'matheusya31@gmail.com', // Email configurado
+        pass: 'gemj ijae jost xupp' // Senha de aplicativo configurada
     }
 };
 
