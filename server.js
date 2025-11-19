@@ -14,13 +14,28 @@ app.use(express.json());
 // CONFIGURAÇÃO DE EMAIL
 // ========================================
 // IMPORTANTE: Configure com suas credenciais reais
-const transporter = nodemailer.createTransport({
+const EMAIL_CONFIG = {
     service: 'gmail', // ou 'outlook', 'yahoo', etc
     auth: {
         user: 'seu-email@gmail.com', // ALTERE AQUI
         pass: 'sua-senha-app' // ALTERE AQUI (use senha de aplicativo)
     }
-});
+};
+
+// Verificar se email está configurado
+const EMAIL_CONFIGURADO = EMAIL_CONFIG.auth.user !== 'seu-email@gmail.com' && 
+                          EMAIL_CONFIG.auth.pass !== 'sua-senha-app';
+
+let transporter = null;
+
+if (EMAIL_CONFIGURADO) {
+    transporter = nodemailer.createTransport(EMAIL_CONFIG);
+    console.log('📧 Email configurado: ' + EMAIL_CONFIG.auth.user);
+} else {
+    console.warn('⚠️  EMAIL NÃO CONFIGURADO!');
+    console.warn('⚠️  Edite o server.js e configure suas credenciais de email');
+    console.warn('⚠️  Os cadastros funcionarão, mas emails não serão enviados');
+}
 
 // Para Gmail: https://myaccount.google.com/apppasswords
 // Para Outlook: https://account.live.com/proofs/AppPassword
@@ -73,10 +88,15 @@ async function saveData(file, data) {
 // FUNÇÕES DE EMAIL
 // ========================================
 async function enviarEmailConfirmacaoCadastro(usuario, tipo) {
+    if (!EMAIL_CONFIGURADO) {
+        console.warn('⚠️  Email não enviado - Configure suas credenciais no server.js');
+        return false;
+    }
+    
     const tipoTexto = tipo === 'cliente' ? 'Cliente' : 'Barbeiro';
     
     const mailOptions = {
-        from: 'seu-email@gmail.com', // ALTERE AQUI
+        from: EMAIL_CONFIG.auth.user,
         to: usuario.email,
         subject: `✅ Cadastro Confirmado - Na Régua ${tipoTexto}`,
         html: `
@@ -156,18 +176,28 @@ async function enviarEmailConfirmacaoCadastro(usuario, tipo) {
     };
     
     try {
-        await transporter.sendMail(mailOptions);
-        console.log(`✅ Email de cadastro enviado para: ${usuario.email}`);
+        console.log(`📤 Enviando email de ${tipo} para: ${usuario.email}...`);
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`✅ Email de cadastro enviado com sucesso!`);
+        console.log(`   Para: ${usuario.email}`);
+        console.log(`   Message ID: ${info.messageId}`);
         return true;
     } catch (error) {
-        console.error(`❌ Erro ao enviar email para ${usuario.email}:`, error);
+        console.error(`❌ ERRO ao enviar email para ${usuario.email}:`);
+        console.error(`   Erro: ${error.message}`);
+        if (error.code) console.error(`   Código: ${error.code}`);
         return false;
     }
 }
 
 async function enviarEmailConfirmacaoAgendamento(agendamento, cliente, barbeiro) {
+    if (!EMAIL_CONFIGURADO) {
+        console.warn('⚠️  Email não enviado - Configure suas credenciais no server.js');
+        return false;
+    }
+    
     const mailOptions = {
-        from: 'seu-email@gmail.com', // ALTERE AQUI
+        from: EMAIL_CONFIG.auth.user,
         to: cliente.email,
         subject: '✅ Agendamento Confirmado - Na Régua',
         html: `
@@ -251,14 +281,78 @@ async function enviarEmailConfirmacaoAgendamento(agendamento, cliente, barbeiro)
     };
     
     try {
-        await transporter.sendMail(mailOptions);
-        console.log(`✅ Email de agendamento enviado para: ${cliente.email}`);
+        console.log(`📤 Enviando email de agendamento para: ${cliente.email}...`);
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`✅ Email de agendamento enviado com sucesso!`);
+        console.log(`   Para: ${cliente.email}`);
+        console.log(`   Message ID: ${info.messageId}`);
         return true;
     } catch (error) {
-        console.error(`❌ Erro ao enviar email para ${cliente.email}:`, error);
+        console.error(`❌ ERRO ao enviar email para ${cliente.email}:`);
+        console.error(`   Erro: ${error.message}`);
+        if (error.code) console.error(`   Código: ${error.code}`);
         return false;
     }
 }
+
+// ========================================
+// ROTA DE TESTE DE EMAIL
+// ========================================
+app.post('/api/test-email', async (req, res) => {
+    if (!EMAIL_CONFIGURADO) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Email não configurado. Edite o server.js com suas credenciais.' 
+        });
+    }
+    
+    const { email } = req.body;
+    
+    if (!email) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Email não fornecido' 
+        });
+    }
+    
+    const mailOptions = {
+        from: EMAIL_CONFIG.auth.user,
+        to: email,
+        subject: '✅ Teste de Email - Na Régua',
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h1 style="color: #667eea;">🎉 Teste de Email Funcionando!</h1>
+                <p>Se você recebeu este email, significa que o sistema de envio está configurado corretamente.</p>
+                <p><strong>Sistema:</strong> Na Régua</p>
+                <p><strong>Remetente:</strong> ${EMAIL_CONFIG.auth.user}</p>
+                <p><strong>Destinatário:</strong> ${email}</p>
+                <p><strong>Data/Hora:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+                <hr>
+                <p style="color: #28a745;">✅ Configuração de email OK!</p>
+            </div>
+        `
+    };
+    
+    try {
+        console.log(`📤 Enviando email de teste para: ${email}...`);
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`✅ Email de teste enviado com sucesso!`);
+        console.log(`   Message ID: ${info.messageId}`);
+        
+        res.json({ 
+            success: true, 
+            message: 'Email de teste enviado com sucesso!',
+            messageId: info.messageId
+        });
+    } catch (error) {
+        console.error(`❌ Erro ao enviar email de teste:`, error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Erro ao enviar email: ' + error.message,
+            error: error.code || 'UNKNOWN'
+        });
+    }
+});
 
 // ========================================
 // ROTAS - CADASTRO DE CLIENTES
