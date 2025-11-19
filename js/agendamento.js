@@ -384,9 +384,9 @@ async function confirmarAgendamento() {
                 console.log('✅ Agendamento salvo no servidor');
                 
                 if (result.emailEnviado) {
-                    Utils.showNotification('✅ Agendamento confirmado! Verifique seu email.', 'success');
+                    Utils.showNotification('✅ Agendamento confirmado! Emails enviados para você e para o barbeiro.', 'success');
                 } else {
-                    Utils.showNotification('✅ Agendamento confirmado! (Email não enviado - configure o servidor)', 'success');
+                    Utils.showNotification('✅ Agendamento confirmado! (Emails não enviados - configure o servidor)', 'success');
                 }
             } else {
                 console.warn('⚠️ Erro no servidor:', result.message);

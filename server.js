@@ -196,7 +196,8 @@ async function enviarEmailConfirmacaoAgendamento(agendamento, cliente, barbeiro)
         return false;
     }
     
-    const mailOptions = {
+    // Email para o CLIENTE
+    const mailOptionsCliente = {
         from: EMAIL_CONFIG.auth.user,
         to: cliente.email,
         subject: '✅ Agendamento Confirmado - Na Régua',
@@ -280,15 +281,120 @@ async function enviarEmailConfirmacaoAgendamento(agendamento, cliente, barbeiro)
         `
     };
     
+    // Email para o BARBEIRO
+    const mailOptionsBarbeiro = {
+        from: EMAIL_CONFIG.auth.user,
+        to: barbeiro?.email,
+        subject: '📅 Novo Agendamento - Na Régua',
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
+                    <h1 style="color: white; margin: 0;">✂️ Na Régua</h1>
+                    <p style="color: white; margin-top: 10px;">Você tem um Novo Agendamento!</p>
+                </div>
+                
+                <div style="padding: 30px; background-color: #f9f9f9;">
+                    <h2 style="color: #333;">Olá, ${barbeiro?.nome}! 👋</h2>
+                    
+                    <p style="font-size: 16px; color: #666; line-height: 1.6;">
+                        Um novo agendamento foi confirmado para você. Confira os detalhes:
+                    </p>
+                    
+                    <div style="background-color: white; padding: 25px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #667eea;">
+                        <h3 style="color: #667eea; margin-top: 0;">📅 Detalhes do Agendamento:</h3>
+                        
+                        <div style="margin: 15px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+                            <p style="margin: 8px 0; font-size: 16px;">
+                                <strong>📆 Data:</strong> 
+                                <span style="color: #667eea; font-size: 18px; font-weight: bold;">
+                                    ${new Date(agendamento.data).toLocaleDateString('pt-BR', { 
+                                        weekday: 'long',
+                                        day: '2-digit', 
+                                        month: 'long', 
+                                        year: 'numeric'
+                                    })}
+                                </span>
+                            </p>
+                            <p style="margin: 8px 0; font-size: 16px;">
+                                <strong>⏰ Horário:</strong> 
+                                <span style="color: #667eea; font-size: 18px; font-weight: bold;">
+                                    ${agendamento.horario}
+                                </span>
+                            </p>
+                            <p style="margin: 8px 0; font-size: 16px;">
+                                <strong>⏱️ Duração:</strong> ${agendamento.duracao || 30} minutos
+                            </p>
+                        </div>
+                        
+                        <div style="background-color: #e7f3ff; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                            <h4 style="color: #1976D2; margin-top: 0; margin-bottom: 10px;">👤 Informações do Cliente:</h4>
+                            <p style="margin: 5px 0;"><strong>Nome:</strong> ${cliente.nome}</p>
+                            <p style="margin: 5px 0;"><strong>📞 Telefone:</strong> ${cliente.telefone || 'Não informado'}</p>
+                            <p style="margin: 5px 0;"><strong>📧 Email:</strong> ${cliente.email}</p>
+                        </div>
+                        
+                        <p style="margin: 8px 0;"><strong>✂️ Serviço:</strong> ${agendamento.servicoNome || agendamento.servico}</p>
+                        <p style="margin: 8px 0;"><strong>💰 Valor:</strong> R$ ${(agendamento.valor || 0).toFixed(2)}</p>
+                        ${agendamento.observacoes ? `
+                            <p style="margin: 8px 0;"><strong>📝 Observações:</strong> ${agendamento.observacoes}</p>
+                        ` : ''}
+                        <p style="margin: 8px 0;"><strong>🆔 Código:</strong> <code style="background-color: #f8f9fa; padding: 2px 6px; border-radius: 3px;">#${agendamento.id}</code></p>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background-color: #d4edda; border-radius: 5px; border-left: 4px solid #28a745;">
+                        <p style="margin: 0; color: #155724; font-size: 14px;">
+                            <strong>✅ Dica:</strong> Reserve este horário em sua agenda e esteja preparado com antecedência.
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <a href="http://localhost:5500/pages/painel-barbeiro.html" 
+                           style="background-color: #667eea; color: white; padding: 15px 30px; 
+                                  text-decoration: none; border-radius: 5px; display: inline-block; 
+                                  font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            📋 Ver Todos os Agendamentos
+                        </a>
+                    </div>
+                </div>
+                
+                <div style="background-color: #333; color: white; padding: 20px; text-align: center;">
+                    <p style="margin: 0; font-size: 14px;">
+                        © 2025 Na Régua - Sistema de Agendamento para Barbearias
+                    </p>
+                    <p style="margin: 10px 0 0 0; font-size: 12px; color: #999;">
+                        Este é um email automático, por favor não responda.
+                    </p>
+                </div>
+            </div>
+        `
+    };
+    
     try {
-        console.log(`📤 Enviando email de agendamento para: ${cliente.email}...`);
-        const info = await transporter.sendMail(mailOptions);
-        console.log(`✅ Email de agendamento enviado com sucesso!`);
+        let emailsEnviados = 0;
+        
+        // Enviar email para o cliente
+        console.log(`📤 Enviando email de agendamento para CLIENTE: ${cliente.email}...`);
+        const infoCliente = await transporter.sendMail(mailOptionsCliente);
+        console.log(`✅ Email enviado para o cliente com sucesso!`);
         console.log(`   Para: ${cliente.email}`);
-        console.log(`   Message ID: ${info.messageId}`);
-        return true;
+        console.log(`   Message ID: ${infoCliente.messageId}`);
+        emailsEnviados++;
+        
+        // Enviar email para o barbeiro (se tiver email)
+        if (barbeiro && barbeiro.email) {
+            console.log(`📤 Enviando email de agendamento para BARBEIRO: ${barbeiro.email}...`);
+            const infoBarbeiro = await transporter.sendMail(mailOptionsBarbeiro);
+            console.log(`✅ Email enviado para o barbeiro com sucesso!`);
+            console.log(`   Para: ${barbeiro.email}`);
+            console.log(`   Message ID: ${infoBarbeiro.messageId}`);
+            emailsEnviados++;
+        } else {
+            console.warn(`⚠️  Barbeiro sem email cadastrado - Email não enviado para o barbeiro`);
+        }
+        
+        return emailsEnviados > 0;
     } catch (error) {
-        console.error(`❌ ERRO ao enviar email para ${cliente.email}:`);
+        console.error(`❌ ERRO ao enviar emails de agendamento:`);
         console.error(`   Erro: ${error.message}`);
         if (error.code) console.error(`   Código: ${error.code}`);
         return false;

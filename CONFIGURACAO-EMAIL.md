@@ -4,6 +4,28 @@
 
 Siga estes passos para corrigir:
 
+## 📨 Quem Recebe os Emails?
+
+### ✅ Cadastro de Cliente
+- **Email enviado para:** O cliente que se cadastrou
+- **Conteúdo:** Confirmação de cadastro + dados cadastrados
+
+### ✅ Cadastro de Barbeiro
+- **Email enviado para:** O barbeiro que se cadastrou
+- **Conteúdo:** Confirmação de cadastro + dados profissionais
+
+### ✅ Agendamento Realizado
+- **Email #1 enviado para:** O **cliente** que fez o agendamento
+  - Confirmação do agendamento
+  - Detalhes: data, hora, barbeiro, serviço
+  - Link para ver seus agendamentos
+  
+- **Email #2 enviado para:** O **barbeiro** que foi escolhido
+  - Notificação de novo agendamento
+  - Dados do cliente (nome, telefone, email)
+  - Detalhes: data, hora, serviço, valor
+  - Link para ver todos os agendamentos
+
 ## 🔧 Passo 1: Configurar Credenciais no server.js
 
 1. Abra o arquivo `server.js`
@@ -11,11 +33,11 @@ Siga estes passos para corrigir:
 
 ```javascript
 const EMAIL_CONFIG = {
-    service: 'gmail',
-    auth: {
-        user: 'seu-email@gmail.com', // ALTERE AQUI
-        pass: 'sua-senha-app' // ALTERE AQUI
-    }
+  service: "gmail",
+  auth: {
+    user: "seu-email@gmail.com", // ALTERE AQUI
+    pass: "sua-senha-app", // ALTERE AQUI
+  },
 };
 ```
 
@@ -62,12 +84,14 @@ pass: 'abcd efgh ijkl mnop'  // Senha de 16 dígitos
 ## ✅ Passo 5: Testar
 
 ### Opção 1: Página de Teste
+
 1. Abra: `pages/test-email.html` no navegador
 2. Digite seu email
 3. Clique em "Enviar Email de Teste"
 4. Verifique sua caixa de entrada
 
 ### Opção 2: Fazer um Cadastro
+
 1. Vá em "Cadastro" no site
 2. Preencha o formulário com um email real
 3. Clique em "Cadastrar"
@@ -82,6 +106,7 @@ Ao iniciar o servidor, você deve ver:
 ```
 
 Se ver isso, está configurado:
+
 ```
 ⚠️  EMAIL NÃO CONFIGURADO!
 ```
@@ -89,19 +114,23 @@ Se ver isso, está configurado:
 ## ❌ Problemas Comuns
 
 ### 1. "Invalid login"
+
 - ✅ Você está usando **senha de aplicativo**, não sua senha normal?
 - ✅ A senha está correta (16 caracteres)?
 - ✅ Habilitou verificação em 2 etapas no Gmail?
 
 ### 2. "Authentication failed"
+
 - ✅ Email está correto?
 - ✅ Senha de aplicativo foi gerada corretamente?
 
 ### 3. "Connection timeout"
+
 - ✅ Está conectado à internet?
 - ✅ Firewall está bloqueando?
 
 ### 4. Emails vão para SPAM
+
 - ✅ Normal para emails novos
 - ✅ Marque como "não é spam"
 
@@ -110,11 +139,11 @@ Se ver isso, está configurado:
 ```javascript
 // server.js - Configuração correta
 const EMAIL_CONFIG = {
-    service: 'gmail',
-    auth: {
-        user: 'barbearia.naregua@gmail.com',
-        pass: 'xpto1234abcd5678'  // Senha de app de 16 dígitos
-    }
+  service: "gmail",
+  auth: {
+    user: "barbearia.naregua@gmail.com",
+    pass: "xpto1234abcd5678", // Senha de app de 16 dígitos
+  },
 };
 ```
 
@@ -135,6 +164,7 @@ const EMAIL_CONFIG = {
 ---
 
 **Depois de configurar corretamente, os emails serão enviados automaticamente para:**
+
 - ✅ Cadastro de clientes
 - ✅ Cadastro de barbeiros
 - ✅ Confirmação de agendamentos

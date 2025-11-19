@@ -5,7 +5,7 @@ Sistema completo de agendamento para barbearias com envio automático de emails 
 ## 🚀 Funcionalidades
 
 - ✅ Cadastro de clientes com confirmação por email
-- ✅ Cadastro de barbeiros com confirmação por email  
+- ✅ Cadastro de barbeiros com confirmação por email
 - ✅ Sistema de agendamento com envio de confirmação por email
 - ✅ Salvamento de dados em arquivos JSON
 - ✅ Interface web responsiva
@@ -31,6 +31,7 @@ npm install
 ```
 
 Isso instalará as seguintes dependências:
+
 - `express` - Framework web
 - `cors` - Permitir requisições de diferentes origens
 - `nodemailer` - Envio de emails
@@ -46,8 +47,8 @@ Abra o arquivo `server.js` e localize estas linhas (próximo ao topo):
 const transporter = nodemailer.createTransport({
     service: 'gmail', // ou 'outlook', 'yahoo', etc
     auth: {
-        user: 'seu-email@gmail.com', // ALTERE AQUI
-        pass: 'sua-senha-app' // ALTERE AQUI (use senha de aplicativo)
+        user: matheus.yuri@aedb.br, // ALTERE AQUI
+        pass: Kiyuwel31 // ALTERE AQUI (use senha de aplicativo)
     }
 });
 ```
@@ -114,11 +115,13 @@ Você verá uma mensagem assim:
 **Opções:**
 
 **Com VS Code Live Server:**
+
 - Clique com botão direito em `index.html`
 - Selecione "Open with Live Server"
 - O navegador abrirá automaticamente
 
 **Sem Live Server:**
+
 - Simplesmente abra o arquivo `index.html` no navegador
 - Ou use: `powershell Start-Process index.html`
 
@@ -157,16 +160,19 @@ NaRegua/
 O sistema envia emails automaticamente nas seguintes situações:
 
 ### 1. Cadastro de Cliente
+
 - ✅ Email de boas-vindas
 - 📋 Dados do cadastro
 - 🔗 Link para fazer agendamento
 
 ### 2. Cadastro de Barbeiro
+
 - ✅ Email de confirmação
 - 💼 Dados profissionais
 - 🔗 Link para acessar painel
 
 ### 3. Agendamento Realizado
+
 - ✅ Confirmação do agendamento
 - 📅 Data e horário
 - 💈 Informações do barbeiro
@@ -179,6 +185,7 @@ O sistema envia emails automaticamente nas seguintes situações:
 ### Teste Completo:
 
 1. **Inicie o servidor backend:**
+
    ```powershell
    npm start
    ```
@@ -186,6 +193,7 @@ O sistema envia emails automaticamente nas seguintes situações:
 2. **Abra o frontend** (`index.html`)
 
 3. **Cadastre um barbeiro:**
+
    - Vá em "Sou Barbeiro"
    - Preencha o formulário
    - Use um email válido seu
@@ -193,6 +201,7 @@ O sistema envia emails automaticamente nas seguintes situações:
    - ✅ Você receberá um email de confirmação!
 
 4. **Cadastre um cliente:**
+
    - Vá em "Cadastro"
    - Preencha o formulário
    - Use outro email válido seu
@@ -209,11 +218,13 @@ O sistema envia emails automaticamente nas seguintes situações:
 ## 🛠️ Solução de Problemas
 
 ### Servidor não inicia
+
 - Verifique se a porta 3000 está livre
 - Execute: `netstat -ano | findstr :3000`
 - Se estiver em uso, mate o processo ou altere a porta no `server.js`
 
 ### Emails não são enviados
+
 - ✅ Verifique se configurou corretamente as credenciais
 - ✅ Use senha de APLICATIVO, não sua senha normal
 - ✅ Verifique se o email está correto
@@ -222,11 +233,13 @@ O sistema envia emails automaticamente nas seguintes situações:
 - ✅ Confira o console do servidor para ver erros
 
 ### Erro "fetch failed" ou "Network error"
+
 - ✅ Certifique-se que o servidor backend está rodando
 - ✅ Verifique se está usando `http://localhost:3000` (não HTTPS)
 - ✅ Verifique se o CORS está habilitado no servidor
 
 ### Dados não são salvos
+
 - ✅ Verifique se a pasta `data/` foi criada
 - ✅ Verifique permissões de escrita
 - ✅ Confira o console do servidor para erros
@@ -249,6 +262,7 @@ GET  /api/clientes              - Listar clientes
 ⚠️ **IMPORTANTE:** Este é um projeto educacional/demonstrativo.
 
 Para uso em produção, você deve:
+
 - ✅ Usar HTTPS
 - ✅ Hash de senhas (bcrypt)
 - ✅ Validação de dados no backend
@@ -279,6 +293,7 @@ MIT License - Sinta-se livre para usar este projeto!
 ## 👨‍💻 Suporte
 
 Se tiver problemas:
+
 1. Verifique o console do navegador (F12)
 2. Verifique o terminal do servidor
 3. Confira se seguiu todos os passos de configuração
